@@ -122,6 +122,63 @@ def fetch_od_volume_by_train_stations(date='202408'):
     else:
         print(f"Failed to retrieve OD Train Stations data. Status code: {response.status_code}")
 
+# 6. Train Station - Geospatial Whole Island API
+def fetch_train_stn_geospatial_whole_island(date='202408'):
+    print("Fetching Train Station - Geospatial Whole Island...")
+    url = "https://datamall2.mytransport.sg/ltaodataservice/GeospatialWholeIsland"
+    params = {'Date': date,
+              'ID': 'TrainStation'}
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        # download_link = data.get('Link')
+        if 'value' in data and data['value']:
+            download_link = data['value'][0]['Link']
+            # download_zip_file(download_link, 'data/train_station_geospatial_whole_island_202408.zip')
+            download_zip_file(download_link, 'train_station_geospatial_whole_island_202408.zip')
+        else:
+            print("No Train Station - Geospatial Whole Island data available.")
+    else:
+        print(f"Failed to retrieve Train Station - Geospatial Whole Island data. Status code: {response.status_code}")
+
+# 7. Train Station - Geospatial Whole Island API
+def fetch_train_stn_exit_geospatial_whole_island(date='202408'):
+    print("Fetching Train Station Exit - Geospatial Whole Island...")
+    url = "https://datamall2.mytransport.sg/ltaodataservice/GeospatialWholeIsland"
+    params = {'Date': date,
+              'ID': 'TrainStationExit'}
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        # download_link = data.get('Link')
+        if 'value' in data and data['value']:
+            download_link = data['value'][0]['Link']
+            # download_zip_file(download_link, 'data/train_station_exit_geospatial_whole_island_202408.zip')
+            download_zip_file(download_link, 'train_station_exit_geospatial_whole_island_202408.zip')
+        else:
+            print("No Train Station Exit - Geospatial Whole Island data available.")
+    else:
+        print(f"Failed to retrieve Train Station Exit - Geospatial Whole Island data. Status code: {response.status_code}")
+
+# 8. Bus Stop Location - Geospatial Whole Island API
+def fetch_bus_stop_geospatial_whole_island(date='202408'):
+    print("Fetching Bus Stop Location - Geospatial Whole Island...")
+    url = "https://datamall2.mytransport.sg/ltaodataservice/GeospatialWholeIsland"
+    params = {'Date': date,
+              'ID': 'BusStopLocation'}
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        data = response.json()
+        # download_link = data.get('Link')
+        if 'value' in data and data['value']:
+            download_link = data['value'][0]['Link']
+            # download_zip_file(download_link, 'data/bus_stop_location_geospatial_whole_island_202408.zip')
+            download_zip_file(download_link, 'bus_stop_location_geospatial_whole_island_202408.zip')
+        else:
+            print("No Bus Stop Location - Geospatial Whole Island data available.")
+    else:
+        print(f"Failed to retrieve Bus Stop Location - Geospatial Whole Island data. Status code: {response.status_code}")
+
 # Fetch all data
 def fetch_all_data():
     fetch_bus_routes()
@@ -129,6 +186,9 @@ def fetch_all_data():
     fetch_passenger_volume_by_bus_stops()
     fetch_od_volume_by_bus_stops()
     fetch_od_volume_by_train_stations()
+    fetch_train_stn_geospatial_whole_island()
+    fetch_train_stn_exit_geospatial_whole_island()
+    fetch_bus_stop_geospatial_whole_island()
 
 # Execute the data fetching
 fetch_all_data()
