@@ -54,7 +54,7 @@ def fetch_bus_stops():
     bus_stops_data = fetch_paginated_data(url, headers)
     if bus_stops_data:
         bus_stops_df = pd.DataFrame(bus_stops_data)
-        #bus_stops_df.to_csv('data/bus_stops_data.csv', index=False)
+        # bus_stops_df.to_csv('data/bus_stops_data.csv', index=False)
         bus_stops_df.to_csv('bus_stops_data.csv', index=False)
         print("Bus Stops data saved to bus_stops_data.csv.")
     else:
