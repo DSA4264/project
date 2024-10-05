@@ -41,7 +41,8 @@ def fetch_bus_routes():
     bus_routes_data = fetch_paginated_data(url, headers)
     if bus_routes_data:
         bus_routes_df = pd.DataFrame(bus_routes_data)
-        bus_routes_df.to_csv('data/bus_routes_data.csv', index=False)
+        #bus_routes_df.to_csv('data/bus_routes_data.csv', index=False)
+        bus_routes_df.to_csv('bus_routes_data.csv', index=False)
         print("Bus Routes data saved to bus_routes_data.csv.")
     else:
         print("No Bus Routes data retrieved.")
@@ -53,7 +54,8 @@ def fetch_bus_stops():
     bus_stops_data = fetch_paginated_data(url, headers)
     if bus_stops_data:
         bus_stops_df = pd.DataFrame(bus_stops_data)
-        bus_stops_df.to_csv('data/bus_stops_data.csv', index=False)
+        #bus_stops_df.to_csv('data/bus_stops_data.csv', index=False)
+        bus_stops_df.to_csv('bus_stops_data.csv', index=False)
         print("Bus Stops data saved to bus_stops_data.csv.")
     else:
         print("No Bus Stops data retrieved.")
@@ -79,7 +81,8 @@ def fetch_passenger_volume_by_bus_stops(date='202408'):
         data = response.json()
         if 'value' in data and data['value']:
             download_link = data['value'][0]['Link']
-            download_zip_file(download_link, 'data/transport_node_bus_202408.zip')
+            #download_zip_file(download_link, 'data/transport_node_bus_202408.zip')
+            download_zip_file(download_link, 'transport_node_bus_202408.zip')
         else:
             print("No Passenger Volume by Bus Stops data available.")
     else:
@@ -95,7 +98,8 @@ def fetch_od_volume_by_bus_stops(date='202408'):
         data = response.json()
         if 'value' in data and data['value']:
             download_link = data['value'][0]['Link']
-            download_zip_file(download_link, 'data/origin_destination_bus_202408.zip')
+            # download_zip_file(download_link, 'data/origin_destination_bus_202408.zip')
+            download_zip_file(download_link, 'origin_destination_bus_202408.zip')
         else:
             print("No Origin-Destination Bus Stops data available.")
     else:
@@ -111,7 +115,8 @@ def fetch_od_volume_by_train_stations(date='202408'):
         data = response.json()
         if 'value' in data and data['value']:
             download_link = data['value'][0]['Link']
-            download_zip_file(download_link, 'data/od_train_volume_202408.zip')
+            # download_zip_file(download_link, 'data/od_train_volume_202408.zip')
+            download_zip_file(download_link, 'od_train_volume_202408.zip')
         else:
             print("No Origin-Destination Train Stations data available.")
     else:
