@@ -166,3 +166,9 @@ cython_debug/
 *.xlsx
 *.json
 *.zip
+
+# Ignore all log files in all directories
+*.log
+
+# Ignore all .DS_Store files in all directories
+.DS_Store
