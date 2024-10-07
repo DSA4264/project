@@ -4,6 +4,8 @@ import pandas as pd
 import zipfile
 import io
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -173,6 +175,86 @@ def fetch_bus_stop_geospatial_whole_island(date='202408'):
             print("No Bus Stop Location - Geospatial Whole Island data available.")
     else:
         print(f"Failed to retrieve Bus Stop Location - Geospatial Whole Island data. Status code: {response.status_code}")
+        
+# 9. MRT Line to Name
+def fetch_mrt_line():
+    # Function to map MRT lines and create indicator variables
+    def mrt_line_mapping(df):
+        # Flatten the column names if they are MultiIndex
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = ['_'.join(col).strip() for col in df.columns.values]
+
+        # Assuming the MRT line code is in the first column, adjust as necessary
+        line_column = 'Alpha-numeric code(s)_In operation'
+
+        # Extract the MRT line codes (first 2 characters of the identified column)
+        df['MRT_Lines'] = df[line_column].str.extract('([A-Z]{2})')
+
+        # Split multiple lines in case a station belongs to multiple MRT lines
+        df['MRT_Lines_List'] = df[line_column].str.findall(r'[A-Z]{2}')
+
+        # Create indicator variables for each MRT line
+        mrt_lines = ['NS', 'EW', 'DT', 'CC', 'NE', 'TE', 'CG', 'CE']  # Add more as necessary
+        
+        for line in mrt_lines:
+            df[line] = df['MRT_Lines_List'].apply(lambda x: 1 if line in x else 0)
+
+        # Filter out rows that contain MRT lines you want to remove (CP, CR, CA, JR)
+        unwanted_lines = ['CP', 'CR', 'CA', 'JR']
+        df = df[~df['MRT_Lines'].isin(unwanted_lines)]
+
+        # List of station names to remove
+        unwanted_station_names = [
+            "Thomson–East Coast Line Extension (TELe)",
+            "Thomson–East Coast Line (TEL)",
+            "North East Line Extension (NELe)",
+            "North East Line (NEL)",
+            "Jurong Region Line (JRL)",
+            "East–West Line (EWL)",
+            "Cross Island Line (CRL)",
+            "Punggol Extension (CPe)",
+            "Circle Line Extension (CCLe)",
+            "Circle Line (CCL)",
+            "Changi Airport Branch Line (CAL)"
+        ]
+
+        # Remove rows with unwanted station names
+        df = df[~df['Station name_English • Malay'].isin(unwanted_station_names)]
+
+        # Keep the station name and the extracted MRT lines with indicator variables
+        result_df = df[['Station name_English • Malay', 'MRT_Lines'] + mrt_lines]
+
+        # Remove rows with any NA values
+        result_df = result_df.dropna()
+
+        return result_df
+
+    # URL of the Wikipedia page containing the table
+    url = "https://en.wikipedia.org/wiki/List_of_Singapore_MRT_stations"
+
+    # Send a GET request to fetch the content of the page
+    response = requests.get(url)
+
+    # Parse the page content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # Find the first table with the class "wikitable sortable"
+    table = soup.find('table', {'class': 'wikitable sortable'})
+
+    # Read the table into a pandas DataFrame
+    df = pd.read_html(str(table))[0]
+
+    # Apply the mrt_line_mapping function to extract MRT lines and create indicator variables
+    df_with_lines = mrt_line_mapping(df)
+
+    # Check if the DataFrame is not empty before saving it
+    if not df_with_lines.empty:
+        mrt_df = pd.DataFrame(df_with_lines)
+        mrt_df_path = os.path.join(data_folder, 'singapore_mrt_stations_with_lines_filtered.csv')
+        mrt_df.to_csv(mrt_df_path, index=False)
+        print(f"Filtered table with MRT line indicators has been saved to '{mrt_df_path}'")
+    else:
+        print("No data available after filtering.")
 
 # Fetch all data
 def fetch_all_data():
@@ -184,6 +266,7 @@ def fetch_all_data():
     fetch_train_stn_geospatial_whole_island()
     fetch_train_stn_exit_geospatial_whole_island()
     fetch_bus_stop_geospatial_whole_island()
+    fetch_mrt_line()
 
 # Execute the data fetching
 fetch_all_data()
