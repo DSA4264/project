@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from rapidfuzz import fuzz, process
 from scipy import stats
-from shapely.geometry import Point
 
 data_folder = "data"
 
@@ -415,7 +414,7 @@ def tagging_mrt_to_bus_stops(y, x, distance=optimal_distance):
 tagging = tagging_mrt_to_bus_stops(mrt_exits_gdf_mapped, bus_stops_gdf)
 
 # Filter only the MRT-related bus stops
-bus_stops_mrt = tagging[tagging["is_mrt"] == True]
+bus_stops_mrt = tagging[tagging["is_mrt"] is True]
 
 print(bus_stops_mrt.head())
 bus_stops_mrt
