@@ -172,3 +172,6 @@ cython_debug/
 
 # Ignore all .DS_Store files in all directories
 .DS_Store
+
+# Ignore all .ruff_cache files in all directories
+.ruff_cache

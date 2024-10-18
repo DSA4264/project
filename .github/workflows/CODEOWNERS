@@ -1,0 +1,9 @@
+# These owners will be the default owners for everything in
+# the repo unless a later match takes precedence.
+* @limchoonhao
+.github/ @limchoonhao
+/data/ @brandonneo00 @zhyoung17
+app.py @brandonneo00 @limchoonhao
+main.ipynb @xintianchow @zhyoung17 
+main.py @xintianchow @zhyoung17 
+README.md @brandonneo00 @limchoonhao @xintianchow @zhyoung17 
