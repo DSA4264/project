@@ -8,12 +8,10 @@
 <body>
 
     <div class="container">
-        <!-- Full-screen background image -->
         <div class="full-screen-image">
             <img src="{{ url_for('static', filename='image1.png') }}" alt="Map" id="background-image">
         </div>
 
-        <!-- Floating text boxes -->
         <div class="text-box" id="section1">
             <p>This is a map of Singapore.</p>
         </div>
@@ -43,7 +41,7 @@
 
         // IntersectionObserver to track which section is in view
         var options = {
-            root: null, // Use the viewport as the root
+            root: null, 
             threshold: 0.5 // Trigger when 50% of the section is in view
         };
 
