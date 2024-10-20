@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scrolly-Telling with Centered Text Boxes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Full-screen background image -->
+        <div class="full-screen-image">
+            <img src="{{ url_for('static', filename='image1.png') }}" alt="Map" id="background-image">
+        </div>
+
+        <!-- Floating text boxes -->
+        <div class="text-box" id="section1">
+            <p>This is a map of Singapore.</p>
+        </div>
+
+        <div class="text-box" id="section2">
+            <p>We overlaid the Bus Stops near each MRT Exit in Singapore.</p>
+        </div>
+
+        <div class="text-box" id="section3">
+            <p>Dummy pic.</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Function to update the image based on the section in view
+        function updateImage(sectionId) {
+            const imageElement = document.querySelector('#background-image');
+            if (sectionId === 'section1') {
+                imageElement.src = "{{ url_for('static', filename='image1.png') }}";
+            } else if (sectionId === 'section2') {
+                imageElement.src = "{{ url_for('static', filename='image2.png') }}";
+            } else if (sectionId === 'section3') {
+                imageElement.src = "{{ url_for('static', filename='test_image.png') }}";
+            }
+        }
+
+        // IntersectionObserver to track which section is in view
+        var options = {
+            root: null, // Use the viewport as the root
+            threshold: 0.5 // Trigger when 50% of the section is in view
+        };
+
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateImage(entry.target.id);
+                }
+            });
+        }, options);
+
+        // Observe all text sections
+        document.querySelectorAll('.text-box').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+
+</body>
+</html>
