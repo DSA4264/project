@@ -2,27 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Scrolly-Telling with Centered Text Boxes</title>
+    <title>Scrolly-Telling with Dynamic Content</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<!-- Store sections data in a script tag with type application/json -->
+    <script id="sections-data" type="application/json">
+        {{ sections | tojson }}
+    </script>
+
+    <script type="text/javascript">
+        // Parse the JSON data from the script tag
+        var sectionsData = JSON.parse(document.getElementById('sections-data').textContent);
+        var staticUrl = "{{ url_for('static', filename='') }}";
+    </script>
 </head>
 <body>
 
     <div class="container">
+        <!-- Full-screen background image -->
         <div class="full-screen-image">
-            <img src="{{ url_for('static', filename='image1.png') }}" alt="Map" id="background-image">
+            <img src="{{ url_for('static', filename=sections[0].image) }}" alt="Map" id="background-image">
         </div>
 
-        <div class="text-box" id="section1">
-            <p>This is a map of Singapore.</p>
+        <!-- Loop through sections and render each text box -->
+        {% for section in sections %}
+        <div class="text-box" id="{{ section.id }}">
+            <!-- Render text, allowing for HTML formatting (if used) -->
+            <p>{{ section.text | safe }}</p>
         </div>
-
-        <div class="text-box" id="section2">
-            <p>We overlaid the Bus Stops near each MRT Exit in Singapore.</p>
-        </div>
-
-        <div class="text-box" id="section3">
-            <p>Dummy pic.</p>
-        </div>
+        {% endfor %}
 
     </div>
 
@@ -30,12 +37,11 @@
         // Function to update the image based on the section in view
         function updateImage(sectionId) {
             const imageElement = document.querySelector('#background-image');
-            if (sectionId === 'section1') {
-                imageElement.src = "{{ url_for('static', filename='image1.png') }}";
-            } else if (sectionId === 'section2') {
-                imageElement.src = "{{ url_for('static', filename='image2.png') }}";
-            } else if (sectionId === 'section3') {
-                imageElement.src = "{{ url_for('static', filename='test_image.png') }}";
+            const section = sectionsData.find(function(sec) {
+                return sec.id === sectionId;
+            });
+            if (section) {
+                imageElement.src = staticUrl + section.image;
             }
         }
 
@@ -46,7 +52,7 @@
         };
 
         var observer = new IntersectionObserver(function(entries) {
-            entries.forEach(entry => {
+            entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
                     updateImage(entry.target.id);
                 }
@@ -54,7 +60,7 @@
         }, options);
 
         // Observe all text sections
-        document.querySelectorAll('.text-box').forEach(section => {
+        document.querySelectorAll('.text-box').forEach(function(section) {
             observer.observe(section);
         });
     </script>
