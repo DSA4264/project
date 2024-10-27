@@ -2,66 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Scrolly-Telling with Dynamic Content</title>
+    <title>Bus 167 Story and Interactive Map</title>
+    <!-- Include your CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-<!-- Store sections data in a script tag with type application/json -->
+
+    <!-- Store sections data -->
     <script id="sections-data" type="application/json">
         {{ sections | tojson }}
     </script>
 
+    <!-- Define static URL -->
     <script type="text/javascript">
-        // Parse the JSON data from the script tag
+        // Parse the sections data and define the static URL
         var sectionsData = JSON.parse(document.getElementById('sections-data').textContent);
         var staticUrl = "{{ url_for('static', filename='') }}";
     </script>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Scrollytelling Section -->
+    <div class="scrolly-container">
         <!-- Full-screen background image -->
         <div class="full-screen-image">
-            <img src="{{ url_for('static', filename=sections[0].image) }}" alt="Map" id="background-image">
+            <img src="{{ url_for('static', filename=sections[0].image) }}" alt="Background Image" id="background-image">
         </div>
 
-        <!-- Loop through sections and render each text box -->
+        <!-- Scrollytelling text boxes -->
         {% for section in sections %}
-        <div class="text-box" id="{{ section.id }}">
-            <!-- Render text, allowing for HTML formatting (if used) -->
+        <div class="scrolly-text-box" id="{{ section.id }}">
             <p>{{ section.text | safe }}</p>
         </div>
         {% endfor %}
-
     </div>
 
+    <!-- Map Section (Non-scrollytelling) -->
+    <div class="map-section">
+        <h2>Explore Other Bus Routes</h2>
+        <form id="bus-route-form">
+            <label for="service_no">Enter Bus Service Number:</label>
+            <input type="text" id="service_no" name="service_no" required>
+            <button type="submit">Show Route</button>
+        </form>
+        <div id="error-message" style="color: red;"></div>
+        <div class="map-container" id="map-container">
+            {% if bus_route_map %}
+                <h2>Bus Route for Service No: {{ service_no }}</h2>
+                {{ bus_route_map | safe }}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- New Section with Heading, Text, and Images -->
+    <div class="content-section">
+        <h2>Main Story Heading</h2>
+        <p>This section provides additional information, interesting facts, or background context related to the bus routes and areas covered. Here, you can add detailed descriptions, historical context, or anecdotes to engage your audience further.</p>
+
+        <!-- Example images and subheadings -->
+        <h3>Interesting Landmark Along Route</h3>
+        <img src="{{ url_for('static', filename='landmark1.jpg') }}" alt="Landmark 1" style="width:100%; max-width:600px; margin:20px 0;">
+        <p>Description of the landmark. Explain its significance and connection to the bus route story.</p>
+
+        <h3>Historical Insight</h3>
+        <img src="{{ url_for('static', filename='history.jpg') }}" alt="Historical Image" style="width:100%; max-width:600px; margin:20px 0;">
+        <p>Provide historical insight or an interesting fact about the area or route.</p>
+    </div>
+    <!-- Scrollytelling JavaScript -->
     <script>
-        // Function to update the image based on the section in view
+        // Function to update the background image based on the visible section
         function updateImage(sectionId) {
             const imageElement = document.querySelector('#background-image');
-            const section = sectionsData.find(function(sec) {
-                return sec.id === sectionId;
-            });
+            const section = sectionsData.find(sec => sec.id === sectionId);
             if (section) {
                 imageElement.src = staticUrl + section.image;
             }
         }
 
-        // IntersectionObserver to track which section is in view
-        var options = {
-            root: null, 
-            threshold: 0.5 // Trigger when 50% of the section is in view
-        };
-
-        var observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
+        // Intersection Observer to detect when a scrollytelling text box enters the viewport
+        var observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     updateImage(entry.target.id);
                 }
             });
-        }, options);
+        }, { threshold: 0.5 });
 
-        // Observe all text sections
-        document.querySelectorAll('.text-box').forEach(function(section) {
+        // Observe only scrollytelling text boxes within scrolly-container
+        document.querySelectorAll('.scrolly-container .scrolly-text-box').forEach(section => {
             observer.observe(section);
+        });
+
+        // AJAX form submission for bus route
+        document.getElementById('bus-route-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const serviceNoInput = document.getElementById('service_no');
+            const service_no = serviceNoInput.value;
+
+            fetch('/get_bus_route', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'service_no': service_no })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const errorDiv = document.getElementById('error-message');
+                const mapContainer = document.getElementById('map-container');
+
+                // Display error message if any
+                if (data.error_message) {
+                    errorDiv.textContent = data.error_message;
+                    mapContainer.innerHTML = ''; // Clear map if error
+                } else {
+                    errorDiv.textContent = '';
+                    // Update the map container with the new map
+                    mapContainer.innerHTML = `<h2>Bus Route for Service No: ${data.service_no}</h2>${data.bus_route_map}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
     </script>
 
