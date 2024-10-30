@@ -54,18 +54,16 @@
 
     <!-- New Section with Heading, Text, and Images -->
     <div class="content-section">
-        <h2>Main Story Heading</h2>
-        <p>This section provides additional information, interesting facts, or background context related to the bus routes and areas covered. Here, you can add detailed descriptions, historical context, or anecdotes to engage your audience further.</p>
+        <h2>{{ main_story_content.heading }}</h2>
+        <p>{{ main_story_content.text }}</p>
 
-        <!-- Example images and subheadings -->
-        <h3>Interesting Landmark Along Route</h3>
-        <img src="{{ url_for('static', filename='landmark1.jpg') }}" alt="Landmark 1" style="width:100%; max-width:600px; margin:20px 0;">
-        <p>Description of the landmark. Explain its significance and connection to the bus route story.</p>
-
-        <h3>Historical Insight</h3>
-        <img src="{{ url_for('static', filename='history.jpg') }}" alt="Historical Image" style="width:100%; max-width:600px; margin:20px 0;">
-        <p>Provide historical insight or an interesting fact about the area or route.</p>
+        {% for section in main_story_content.sections %}
+        <h3>{{ section.subheading }}</h3>
+        <img src="{{ url_for('static', filename=section.image) }}" alt="{{ section.subheading }}" style="width:100%; max-width:600px; margin:20px 0;">
+        <p>{{ section.description }}</p>
+        {% endfor %}
     </div>
+
     <!-- Scrollytelling JavaScript -->
     <script>
         // Function to update the background image based on the visible section
