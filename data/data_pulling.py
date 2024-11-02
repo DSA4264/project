@@ -102,7 +102,7 @@ def fetch_passenger_volume_by_bus_stops(date="202408"):
 
 
 # 4. Passenger Volume by Origin Destination Bus Stops API
-def fetch_od_volume_by_bus_stops(date="202408"):
+def fetch_od_volume_by_bus_stops(date):
     print("Fetching Passenger Volume by Origin Destination Bus Stops...")
     url = "https://datamall2.mytransport.sg/ltaodataservice/PV/ODBus"
     params = {"Date": date}
@@ -110,15 +110,15 @@ def fetch_od_volume_by_bus_stops(date="202408"):
     if response.status_code == 200:
         data = response.json()
         if "value" in data and data["value"]:
+            filename = "origin_destination_bus_" + date + ".zip"
             download_link = data["value"][0]["Link"]
-            download_zip_file(download_link, "origin_destination_bus_202408.zip")
+            download_zip_file(download_link, filename)
         else:
             print("No Origin-Destination Bus Stops data available.")
     else:
         print(
-            f"Failed to retrieve OD Bus Stops data. Status code: {response.status_code}"
+            f"Failed to retrieve OD Bus Stops data for {date}. Status code: {response.status_code}"
         )
-
 
 # 5. Passenger Volume by Origin Destination Train Stations API
 def fetch_od_volume_by_train_stations(date="202408"):
@@ -301,7 +301,9 @@ def fetch_all_data():
     fetch_bus_routes()
     fetch_bus_stops()
     fetch_passenger_volume_by_bus_stops()
-    fetch_od_volume_by_bus_stops()
+    fetch_od_volume_by_bus_stops("202407")
+    fetch_od_volume_by_bus_stops("202408")
+    fetch_od_volume_by_bus_stops("202409")
     fetch_od_volume_by_train_stations()
     fetch_train_stn_geospatial_whole_island()
     fetch_train_stn_exit_geospatial_whole_island()
