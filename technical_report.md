@@ -59,6 +59,7 @@ This incident highlights a lack of a robust data science methodology within LTA 
 
 ### 2.1 Datasets Used
 Before delving into the analytics, we would like to reemphasise that we are using publicly available dataset, which were obtained mainly from the LTA Datamall and OneMapAPI. 
+<br>
 We used our own API keys to obtain the data, and we have included our data pulling code in our Jupyter Notebook.
 
 #### 2.1.1 LTA Datamall
@@ -77,7 +78,11 @@ We obtained the following data from Wikipedia:
 We trawled the web to find relevant MRT station data, but there is no data that included future stations, other than Wikipedia.
 
 ### 2.2 Data Cleaning
+Data cleaning was relatively easy, as compared to most datasets found online, since the data we are using was taken from public datasets from established APIs such as OneMap API and LTA Datamall.
+<br>
+
 ### 2.3 Exploratory Data Analytics
+
 
 ## 3. Methodology
 
