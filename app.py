@@ -1,13 +1,27 @@
 import os
 import json
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify
 import folium
 import geopandas as gpd
 from shapely import wkt
+from shapely.geometry import LineString, MultiLineString, Point
+from typing import Union
 import pickle
-import uuid
 
 app = Flask(__name__)
+
+def multiline_to_single_line(geometry: Union[LineString, MultiLineString]) -> LineString:
+    if isinstance(geometry, LineString):
+        return geometry
+    elif isinstance(geometry, MultiLineString):
+        coords = []
+        for line in geometry.geoms:
+            coords.extend(line.coords)
+        return LineString(coords)
+    else:
+        # Handle other geometry types if necessary
+        return LineString()
+
 
 def plot_bus_service_and_mrt_routes(service_no, gdf):
     """
@@ -96,6 +110,10 @@ for col in geom_columns:
             bus_mrt_combined_gdf[col] = bus_mrt_combined_gdf[col].apply(wkt.loads)
 
 bus_mrt_combined_gdf['ServiceNo'] = bus_mrt_combined_gdf['ServiceNo'].astype(str)
+
+# Apply the multiline_to_single_line function to the geometry column
+bus_mrt_combined_gdf['geometry'] = bus_mrt_combined_gdf['geometry'].apply(multiline_to_single_line)
+
 
 @app.route('/', methods=['GET'])
 def index():
