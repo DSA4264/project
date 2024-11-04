@@ -1,67 +1,92 @@
 import os
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 import folium
 import geopandas as gpd
 from shapely import wkt
+import pickle
+import uuid
 
 app = Flask(__name__)
 
 def plot_bus_service_and_mrt_routes(service_no, gdf):
     """
-    Plots the 'geometry' route and all MRT geometries for a given ServiceNo using Folium.
+    Plots the MRT lines and the bus route for a given ServiceNo (if available) using Folium.
+
+    Parameters:
+    - service_no: str, the service number to search for
+    - gdf: GeoDataFrame, contains the bus and MRT routes data
+    
+    Returns:
+    - A Folium map centered on Singapore, with MRT lines always displayed
+      and the bus route displayed if a valid service number is provided.
     """
-    row = gdf[gdf['ServiceNo'] == service_no]
-    if row.empty:
-        print(f"No data found for ServiceNo: {service_no}")
-        return None
+    # Center the map on Singapore (or adjust coordinates as needed)
+    singapore_coords = [1.3521, 103.8198]
+    m = folium.Map(location=singapore_coords, zoom_start=12)
 
-    bus_route = row.iloc[0]['geometry']
-    mrt_geoms = [
-        row.iloc[0]['NS_MRT_geom'],
-        row.iloc[0]['EW_MRT_geom'],
-        row.iloc[0]['DT_MRT_geom'],
-        row.iloc[0]['CC_MRT_geom'],
-        row.iloc[0]['NE_MRT_geom'],
-        row.iloc[0]['TE_MRT_geom'],
-        row.iloc[0]['CG_MRT_geom'],
-        row.iloc[0]['CE_MRT_geom']
-    ]
-
+    # Plot MRT lines with corresponding colors
     colors = [
-        'red', 'green', 'darkblue', 'yellow', 'purple', 'brown', 'lightgreen', 'orange'
+        'red',         # NS Line
+        'green',       # EW Line
+        'darkblue',    # DT Line
+        'yellow',      # CC Line
+        'purple',      # NE Line
+        'brown'        # TE Line
     ]
-    mrt_names = [
-        'NS Line', 'EW Line', 'DT Line', 'CC Line', 'NE Line', 'TE Line', 'CG Line', 'CE Line'
+    mrt_geoms = [
+        gdf.iloc[0]['NS_MRT_geom'],
+        gdf.iloc[0]['EW_MRT_geom'],
+        gdf.iloc[0]['DT_MRT_geom'],
+        gdf.iloc[0]['CC_MRT_geom'],
+        gdf.iloc[0]['NE_MRT_geom'],
+        gdf.iloc[0]['TE_MRT_geom']
     ]
-
-    start_coords = [1.3521, 103.8198]  # Default to Singapore coordinates
-    m = folium.Map(location=start_coords, zoom_start=13)
-
-    if bus_route and not bus_route.is_empty and bus_route.is_valid:
+    
+    for mrt_geom, color, name in zip(mrt_geoms, colors, [
+        'NS Line', 'EW Line', 'DT Line', 'CC Line', 'NE Line', 'TE Line'
+    ]):
         folium.GeoJson(
-            bus_route,
-            name='Bus Route',
-            style_function=lambda x: {'color': 'black', 'weight': 3}
+            mrt_geom,
+            name=name,
+            style_function=lambda x, color=color: {'color': color, 'weight': 2}
         ).add_to(m)
-
-    for mrt_geom, color, name in zip(mrt_geoms, colors, mrt_names):
-        if mrt_geom and not mrt_geom.is_empty and mrt_geom.is_valid:
+    
+    # If a valid service number is provided, attempt to plot the bus route
+    if service_no:
+        row = gdf[gdf['ServiceNo'] == service_no]
+        
+        if not row.empty:
+            bus_route = row.iloc[0]['geometry']
+            
+            # Center map on the bus route's starting point
+            start_coords = [bus_route.coords[0][1], bus_route.coords[0][0]]
+            m.location = start_coords
+            m.zoom_start = 13  # Zoom in to focus on the route
+            
+            # Plot the bus route in black
             folium.GeoJson(
-                mrt_geom,
-                name=name,
-                style_function=lambda x, color=color: {'color': color, 'weight': 2}
+                bus_route,
+                name='Bus Route',
+                style_function=lambda x: {'color': 'black', 'weight': 3}
             ).add_to(m)
+        else:
+            print(f"No data found for ServiceNo: {service_no}")
 
+    # Add a layer control to toggle visibility of each line
     folium.LayerControl().add_to(m)
+    
     return m._repr_html_()
 
 # Load the GeoDataFrame with bus and MRT routes
-bus_mrt_combined_gdf = gpd.read_file('data/bus_mrt_combined.geojson')
+file_path = 'data/bus_mrt_combined_gdf.pkl'
+with open(file_path, 'rb') as f:
+    bus_mrt_combined_gdf = pickle.load(f)
 
+# Ensure geometry columns are properly loaded
 geom_columns = [
     'geometry', 'NS_MRT_geom', 'EW_MRT_geom', 'DT_MRT_geom', 'CC_MRT_geom',
-    'NE_MRT_geom', 'TE_MRT_geom', 'CG_MRT_geom', 'CE_MRT_geom'
+    'NE_MRT_geom', 'TE_MRT_geom'
 ]
 
 for col in geom_columns:
@@ -77,11 +102,7 @@ def index():
     sections = [
         {"id": "section1", "image": "image1.png", "text": "This is a map of Singapore."},
         {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA and Wikipedia..."},
-        {"id": "section3", "image": "image3.png", "text": "Text."},
-        {"id": "section4", "image": "image4.png", "text": "Test."},
-        {"id": "section5", "image": "image5.png", "text": "Text"},
-        {"id": "section6", "image": "image6.png", "text": "Text."},
-        # additional sections
+        {"id": "section3", "image": "image3.png", "text": "Text."},  # additional sections
     ]
 
     main_story_content = {
@@ -95,21 +116,26 @@ def index():
         ]
     }
 
-    return render_template('scrollytelling.html', sections=sections, main_story_content=main_story_content)
+    # Generate the default map with MRT lines only
+    default_map = plot_bus_service_and_mrt_routes(service_no=None, gdf=bus_mrt_combined_gdf)
+
+    return render_template(
+        'scrollytelling.html',
+        sections=sections,
+        main_story_content=main_story_content,
+        bus_route_map=default_map  # Pass the default map to the template
+    )
 
 @app.route('/get_bus_route', methods=['POST'])
 def get_bus_route():
     data = request.get_json()
     service_no = data.get('service_no')
-    bus_route_map = None
-    error_message = None
-
-    if not service_no:
-        error_message = "Please enter a bus service number."
+    bus_route_map = plot_bus_service_and_mrt_routes(service_no, bus_mrt_combined_gdf)
+    
+    if bus_route_map is None:
+        error_message = f"No data found for Bus Service No: {service_no}"
     else:
-        bus_route_map = plot_bus_service_and_mrt_routes(service_no, bus_mrt_combined_gdf)
-        if bus_route_map is None:
-            error_message = f"No data found for Bus Service No: {service_no}"
+        error_message = None
 
     response = {
         'error_message': error_message,
@@ -118,5 +144,6 @@ def get_bus_route():
     }
     return jsonify(response)
 
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True)

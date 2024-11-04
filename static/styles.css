@@ -63,8 +63,8 @@ body, html {
 
 /* New Content Section Styles */
 .content-section {
-    background-color: white; /* Set background to black */
-    color: black; /* Set text color to white for contrast */
+    background-color: white;
+    color: black;
     padding: 50px;
     text-align: justify;
 }

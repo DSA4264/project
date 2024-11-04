@@ -2,18 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bus 167 Story and Interactive Map</title>
+    <title>Bus Route and MRT Line Explorer</title>
     <!-- Include your CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
-    <!-- Store sections data -->
+    <!-- Store sections data for scrollytelling -->
     <script id="sections-data" type="application/json">
         {{ sections | tojson }}
     </script>
 
     <!-- Define static URL -->
     <script type="text/javascript">
-        // Parse the sections data and define the static URL
         var sectionsData = JSON.parse(document.getElementById('sections-data').textContent);
         var staticUrl = "{{ url_for('static', filename='') }}";
     </script>
@@ -44,11 +43,11 @@
             <button type="submit">Show Route</button>
         </form>
         <div id="error-message" style="color: red;"></div>
-        <div class="map-container" id="map-container">
-            {% if bus_route_map %}
-                <h2>Bus Route for Service No: {{ service_no }}</h2>
+        <div id="map-container-wrapper">
+            <div class="map-container" id="map-container">
+                <!-- Display default map with MRT lines only initially -->
                 {{ bus_route_map | safe }}
-            {% endif %}
+            </div>
         </div>
     </div>
 
@@ -84,7 +83,7 @@
             });
         }, { threshold: 0.5 });
 
-        // Observe only scrollytelling text boxes within scrolly-container
+        // Observe each scrollytelling text box
         document.querySelectorAll('.scrolly-container .scrolly-text-box').forEach(section => {
             observer.observe(section);
         });
@@ -94,7 +93,7 @@
             event.preventDefault(); // Prevent default form submission
 
             const serviceNoInput = document.getElementById('service_no');
-            const service_no = serviceNoInput.value;
+            const service_no = serviceNoInput.value.trim(); // Trim whitespace
 
             fetch('/get_bus_route', {
                 method: 'POST',
@@ -106,16 +105,21 @@
             .then(response => response.json())
             .then(data => {
                 const errorDiv = document.getElementById('error-message');
-                const mapContainer = document.getElementById('map-container');
+                const mapContainerWrapper = document.getElementById('map-container-wrapper');
 
                 // Display error message if any
                 if (data.error_message) {
                     errorDiv.textContent = data.error_message;
-                    mapContainer.innerHTML = ''; // Clear map if error
+                    mapContainerWrapper.innerHTML = ''; // Clear map if error
                 } else {
                     errorDiv.textContent = '';
-                    // Update the map container with the new map
-                    mapContainer.innerHTML = `<h2>Bus Route for Service No: ${data.service_no}</h2>${data.bus_route_map}`;
+                    // Replace the entire map container
+                    const newMapContainer = document.createElement('div');
+                    newMapContainer.className = 'map-container';
+                    newMapContainer.id = 'map-container';
+                    newMapContainer.innerHTML = `<h2>Bus Route for Service No: ${data.service_no}</h2>${data.bus_route_map}`;
+                    mapContainerWrapper.innerHTML = ''; // Clear previous map
+                    mapContainerWrapper.appendChild(newMapContainer);
                 }
             })
             .catch(error => {
