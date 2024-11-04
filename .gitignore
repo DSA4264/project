@@ -167,6 +167,7 @@ cython_debug/
 *.json
 *.zip
 *.geojson
+*.pkl
 
 # Ignore all log files in all directories
 *.log
