@@ -124,15 +124,22 @@ Using bus service `71` as an example.
 [Insert the plot here please]
 We noticed that it operates from Yio Chu Kang Bus Interchange, and then loops at Bishan, then loops with Ang Mo Kio and then Bishan again. 
 <br>
-However, it is impossible identify residential trunks as they are not labelled as such, so we ran a filtering algorithm on it. So we used a clustering algorithm, clustering on the average distance, to identify the residential trunk services. 
+However, it is impossible identify residential trunks as they are not labelled as such, so we ran a filtering algorithm on it. So we used a clustering algorithm, we clustered on the average distance, and identified the residential trunk services. 
 
 ### 3.2 Phase Two
 #### 3.2.1 Mapping Planning Area
 We used the OneMap API to plot out the residential planning areas and their population numbers. For each bus routes that travels through the residential area, we then added the population number. The population number is not definite, but it is still a decent estimator of the population it could be served.
-#### 3.2.1 Obtaining Bus Frequency
-We obtained bus frequency data
-#### 3.2.2 Calculating BUS-BUS Parallelism
-#### 3.2.3 Clustering Model
+#### 3.2.2 Obtaining Bus Frequency
+We obtained bus frequency data using the LTA DataMall API. Since the frequency range was given in a string format and a range, i.e `6-10 mins`, we had to format it to a int format to calculate an average frequency time. So for this case, the estimated time would have been 8 minutes.
+#### 3.2.3 Creating a scoring system
+Now our final dataframe contains the following information
+1. Parallisation percentage WRT. each MRT line
+2. Population estate served
+3. Population number served
+4. Estimated passenger OD data
+5. Bus Frequency (Peak and off-peak)
+6. Average Distance
+We will be able to generate a scoring system based on this to determine the usefulness of the bus services.
 
 ## 4. Results
 ### 4.1 Results of Phase 1 
@@ -146,4 +153,6 @@ We obtained bus frequency data
 
 ## 6. Conclusion
 ### 6.1 Limitations
+#### 6.1.1 Lack of usable data
+The data provided by LTA were relatively clean, but did not manage to give us better insights. For instance, we needed to gather the passenger volume data for each bus routes, but were unable to get granular data. We had to improvise and use passenger OD data, but we concluded that it was just an estimate. Having the granular values would have enhanced our analytics
 ### 6.2 Future Work

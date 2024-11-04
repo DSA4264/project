@@ -76,12 +76,8 @@ bus_mrt_combined_gdf['ServiceNo'] = bus_mrt_combined_gdf['ServiceNo'].astype(str
 def index():
     sections = [
         {"id": "section1", "image": "image1.png", "text": "This is a map of Singapore."},
-        {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA and Wikipedia..."},
-        {"id": "section3", "image": "image3.png", "text": "Text."},
-        {"id": "section4", "image": "image4.png", "text": "Test."},
-        {"id": "section5", "image": "image5.png", "text": "Text"},
-        {"id": "section6", "image": "image6.png", "text": "Text."},
-        # additional sections
+        {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA, OneMap API and Wikipedia..."},
+        {"id": "section3", "image": "image3.png", "text": "We then overlaid the bus routes over it."},
     ]
 
     main_story_content = {
