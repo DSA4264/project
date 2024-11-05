@@ -344,8 +344,7 @@ def fetch_planning_area_names():
         print(f"Failed to retrieve data. Status Code: {response.status_code}")
 
 # Define the file path for the Excel file
-# file_path = r'C:\Users\Chow Xin Tian\OneDrive\Documents\DSA4264\Singapore Residents by Planning Area, Subzone, Age Group, Sex and Type of Dwelling, Jun 2024.xlsx'
-file_path = r'project\data\Singapore_Residents_by_Planning_Area,_Subzone,_Age_Group,_Sex_and.xlsx'
+file_path = r'C:\Users\Chow Xin Tian\OneDrive\Documents\DSA4264\Singapore Residents by Planning Area, Subzone, Age Group, Sex and Type of Dwelling, Jun 2024.xlsx'
 
 # 1. Fetch Population by Planning Area Data and Save to CSV
 def fetch_population_data():
