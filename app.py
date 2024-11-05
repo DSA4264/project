@@ -66,6 +66,7 @@ def plot_bus_service_and_mrt_routes(service_no, gdf):
     folium.LayerControl().add_to(m)
     return m._repr_html_()
 
+
 def get_overlap_messages(row):
     # Extract MRT overlap percentages
     mrt_overlap_percentages = {}
@@ -82,7 +83,7 @@ def get_overlap_messages(row):
     )[:2]
 
     # Build MRT overlap messages
-    overlap_messages = []
+    mrt_overlap_messages = []
     for line, percentage in top_mrt_lines:
         if percentage > 40:
             overlap_text = f"{line}: {percentage:.2f}% overlap - Very overlapped."
@@ -90,17 +91,19 @@ def get_overlap_messages(row):
             overlap_text = f"{line}: {percentage:.2f}% overlap - Not overlapped."
         else:
             overlap_text = f"{line}: {percentage:.2f}% overlap - Quite overlapped."
-        overlap_messages.append(overlap_text)
+        mrt_overlap_messages.append(overlap_text)
 
-    # Add top alternative bus routes and their overlap percentages
+    # Collect alternative bus routes
+    alt_bus_routes = []
     for i in range(1, 4):
         alternative_bus = row.get(f'Top_{i}_Alternative_Bus', None)
         overlap_percentage = row.get(f'Top_{i}_Overlap_Percentage', None)
         if pd.notnull(alternative_bus) and pd.notnull(overlap_percentage):
-            alt_message = f"We also determined that an alternative route is Bus {alternative_bus} with an overlap of {overlap_percentage:.2f}%."
-            overlap_messages.append(alt_message)
+            alt_bus_routes.append(f"Bus {alternative_bus} with an overlap of {overlap_percentage:.2f}%")
 
-    return overlap_messages
+    return mrt_overlap_messages, alt_bus_routes
+
+
 
 def get_bus_category(row):
     # Updated function to handle NaN values
@@ -109,9 +112,14 @@ def get_bus_category(row):
     else:
         return 'Unknown'
 # Load GeoDataFrame and model data
-file_path = 'data/bus_mrt_combined_gdf.pkl'
+file_path = 'data/buffered_bus_mrt_combined_gdf.pkl'
 with open(file_path, 'rb') as f:
     bus_mrt_combined_gdf = pickle.load(f)
+    
+bus_mrt_combined_gdf.to_csv('bus_mrt_combined_gdf.csv', index=False)
+
+# Rename buffered_bus_route_geom to geometry
+bus_mrt_combined_gdf.rename(columns={'buffered_bus_route_geom': 'geometry'}, inplace=True)
 
 geom_columns = [
     'geometry', 'NS_MRT_geom', 'EW_MRT_geom', 'DT_MRT_geom', 'CC_MRT_geom',
@@ -125,9 +133,6 @@ for col in geom_columns:
             bus_mrt_combined_gdf[col] = bus_mrt_combined_gdf[col].apply(wkt.loads)
 
 bus_mrt_combined_gdf['ServiceNo'] = bus_mrt_combined_gdf['ServiceNo'].astype(str)
-
-bus_mrt_combined_gdf['geometry'] = bus_mrt_combined_gdf['geometry'].apply(multiline_to_single_line)
-
 
 bus_overlap_df = pd.read_csv('data/all_bus_overlaps.csv')
 model_df = pd.read_csv('data/model_df.csv')
@@ -152,8 +157,8 @@ bus_mrt_combined_gdf.to_csv('data/bus_mrt_combined_gdf.csv', index=False)
 def index():
     sections = [
         {"id": "section1", "image": "image1.png", "text": "This is a map of Singapore."},
-        {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA and Wikipedia..."},
-        {"id": "section3", "image": "image3.png", "text": "Text."},
+        {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA and OneMapAPI, we mapped out MRT lines in Singapore."},
+        {"id": "section3", "image": "image3.png", "text": "We then mapped out all the bus routes in Singapore and then buffered."},
     ]
 
     main_story_content = {
@@ -180,17 +185,18 @@ def index():
 def get_bus_route():
     data = request.get_json()
     service_no = data.get('service_no').strip()
-    row = bus_mrt_combined_gdf[bus_mrt_combined_gdf['ServiceNo'] == service_no].iloc[0] if not bus_mrt_combined_gdf[bus_mrt_combined_gdf['ServiceNo'] == service_no].empty else None
+    row_df = bus_mrt_combined_gdf[bus_mrt_combined_gdf['ServiceNo'] == service_no]
 
-    if row is None:
+    if row_df.empty:
         response = {
             'error_message': f"No data found for Bus Service No: {service_no}",
             'bus_route_map': '',
             'service_no': service_no
         }
     else:
+        row = row_df.iloc[0]
         bus_route_map = plot_bus_service_and_mrt_routes(service_no, bus_mrt_combined_gdf)
-        overlap_messages = get_overlap_messages(row)
+        mrt_overlap_messages, alt_bus_routes = get_overlap_messages(row)
         bus_category = get_bus_category(row)
 
         response = {
@@ -198,7 +204,8 @@ def get_bus_route():
             'bus_route_map': bus_route_map,
             'service_no': service_no,
             'Category': bus_category,
-            'overlap_messages': overlap_messages
+            'mrt_overlap_messages': mrt_overlap_messages,
+            'alt_bus_routes': alt_bus_routes
         }
     return jsonify(response)
 

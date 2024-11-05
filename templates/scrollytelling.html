@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bus Route and MRT Line Explorer</title>
+    <title>Is your bus useless?</title>
     <!-- Include your CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
@@ -117,11 +117,26 @@
 
                     // Display additional bus information
                     let busInfoHtml = `<p>Your bus number, <strong>${data.service_no}</strong>, is a <strong>${data.Category}</strong> bus service.</p>`;
-                    busInfoHtml += '<ul>';
-                    data.overlap_messages.forEach(function(message) {
-                        busInfoHtml += `<li>${message}</li>`;
-                    });
-                    busInfoHtml += '</ul>';
+
+                    // MRT Overlap Messages
+                    if (data.mrt_overlap_messages && data.mrt_overlap_messages.length > 0) {
+                        busInfoHtml += '<p>';
+                        data.mrt_overlap_messages.forEach(function(message) {
+                            busInfoHtml += `${message}<br>`;
+                        });
+                        busInfoHtml += '</p>';
+                    }
+
+                    // Alternative Bus Routes
+                    if (data.alt_bus_routes && data.alt_bus_routes.length > 0) {
+                        busInfoHtml += '<p>We also noticed that there are alternative bus routes with significant overlaps:</p>';
+                        busInfoHtml += '<ul>';
+                        data.alt_bus_routes.forEach(function(route) {
+                            busInfoHtml += `<li>${route}</li>`;
+                        });
+                        busInfoHtml += '</ul>';
+                    }
+
                     busInfoDiv.innerHTML = busInfoHtml;
                 }
             })
