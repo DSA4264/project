@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bus 167 Story and Interactive Map</title>
+    <!-- Store sections data for scrollytelling -->
+    <title>Is your bus service redundant?</title>
     <!-- Include your CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
-    <!-- Store sections data -->
+    <!-- Store sections data for scrollytelling -->
     <script id="sections-data" type="application/json">
         {{ sections | tojson }}
     </script>
 
     <!-- Define static URL -->
     <script type="text/javascript">
-        // Parse the sections data and define the static URL
         var sectionsData = JSON.parse(document.getElementById('sections-data').textContent);
         var staticUrl = "{{ url_for('static', filename='') }}";
     </script>
@@ -28,6 +28,7 @@
         </div>
 
         <!-- Scrollytelling text boxes -->
+         <!-- Edit this in the index() in our app.py-->
         {% for section in sections %}
         <div class="scrolly-text-box" id="{{ section.id }}">
             <p>{{ section.text | safe }}</p>
@@ -44,26 +45,26 @@
             <button type="submit">Show Route</button>
         </form>
         <div id="error-message" style="color: red;"></div>
-        <div class="map-container" id="map-container">
-            {% if bus_route_map %}
-                <h2>Bus Route for Service No: {{ service_no }}</h2>
+    
+        <!-- Bus Information -->
+        <div id="bus-info" class="bus-info"></div>
+    
+        <!-- Checkbox Controls -->
+         <!-- Not in use now, but can edit this in the future when we have time-->
+        <div id="checkbox-controls" style="display: none;">
+            <label><input type="checkbox" id="main-route-checkbox" checked> Show Main Bus Route</label>
+            <label><input type="checkbox" id="alternative-route-checkbox" checked> Show Alternative Bus Route</label>
+        </div>
+    
+        <div id="map-container-wrapper">
+            <div class="map-container" id="map-container">
+                <!-- Display default map with MRT lines only initially -->
+                 <!-- This calls from the get_bus_route function in app.py-->
                 {{ bus_route_map | safe }}
-            {% endif %}
+            </div>
         </div>
     </div>
-
-    <!-- New Section with Heading, Text, and Images -->
-    <div class="content-section">
-        <h2>{{ main_story_content.heading }}</h2>
-        <p>{{ main_story_content.text }}</p>
-
-        {% for section in main_story_content.sections %}
-        <h3>{{ section.subheading }}</h3>
-        <img src="{{ url_for('static', filename=section.image) }}" alt="{{ section.subheading }}" style="width:100%; max-width:600px; margin:20px 0;">
-        <p>{{ section.description }}</p>
-        {% endfor %}
-    </div>
-
+    
     <!-- Scrollytelling JavaScript -->
     <script>
         // Function to update the background image based on the visible section
@@ -84,7 +85,7 @@
             });
         }, { threshold: 0.5 });
 
-        // Observe only scrollytelling text boxes within scrolly-container
+        // Observe each scrollytelling text box
         document.querySelectorAll('.scrolly-container .scrolly-text-box').forEach(section => {
             observer.observe(section);
         });
@@ -94,7 +95,7 @@
             event.preventDefault(); // Prevent default form submission
 
             const serviceNoInput = document.getElementById('service_no');
-            const service_no = serviceNoInput.value;
+            const service_no = serviceNoInput.value.trim(); // Trim whitespace
 
             fetch('/get_bus_route', {
                 method: 'POST',
@@ -106,16 +107,47 @@
             .then(response => response.json())
             .then(data => {
                 const errorDiv = document.getElementById('error-message');
-                const mapContainer = document.getElementById('map-container');
+                const mapContainerWrapper = document.getElementById('map-container-wrapper');
+                const busInfoDiv = document.getElementById('bus-info');
 
                 // Display error message if any
                 if (data.error_message) {
                     errorDiv.textContent = data.error_message;
-                    mapContainer.innerHTML = ''; // Clear map if error
+                    mapContainerWrapper.innerHTML = ''; // Clear map if error
+                    busInfoDiv.innerHTML = ''; // Clear bus info if error
                 } else {
                     errorDiv.textContent = '';
-                    // Update the map container with the new map
-                    mapContainer.innerHTML = `<h2>Bus Route for Service No: ${data.service_no}</h2>${data.bus_route_map}`;
+                    // Replace the entire map container
+                    const newMapContainer = document.createElement('div');
+                    newMapContainer.className = 'map-container';
+                    newMapContainer.id = 'map-container';
+                    newMapContainer.innerHTML = `<h2>Bus Route for Service No: ${data.service_no}</h2>${data.bus_route_map}`;
+                    mapContainerWrapper.innerHTML = ''; // Clear previous map
+                    mapContainerWrapper.appendChild(newMapContainer);
+
+                    // Display additional bus information
+                    let busInfoHtml = `<p>Your bus number, <strong>${data.service_no}</strong>, is a <strong>${data.Category}</strong> bus service.</p>`;
+
+                    // MRT Overlap Messages
+                    if (data.mrt_overlap_messages && data.mrt_overlap_messages.length > 0) {
+                        busInfoHtml += '<p>';
+                        data.mrt_overlap_messages.forEach(function(message) {
+                            busInfoHtml += `${message}<br>`;
+                        });
+                        busInfoHtml += '</p>';
+                    }
+
+                    // Alternative Bus Routes 
+                    if (data.alt_bus_routes && data.alt_bus_routes.length > 0) {
+                        busInfoHtml += '<p>We also noticed that there are alternative bus routes with significant overlaps:</p>';
+                        busInfoHtml += '<ul>';
+                        data.alt_bus_routes.forEach(function(route) {
+                            busInfoHtml += `<li>${route}</li>`;
+                        });
+                        busInfoHtml += '</ul>';
+                    }
+
+                    busInfoDiv.innerHTML = busInfoHtml;
                 }
             })
             .catch(error => {
