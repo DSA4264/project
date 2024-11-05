@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Is your bus useless?</title>
+    <!-- Store sections data for scrollytelling -->
+    <title>Is your bus service redundant?</title>
     <!-- Include your CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
@@ -27,6 +28,7 @@
         </div>
 
         <!-- Scrollytelling text boxes -->
+         <!-- Edit this in the index() in our app.py-->
         {% for section in sections %}
         <div class="scrolly-text-box" id="{{ section.id }}">
             <p>{{ section.text | safe }}</p>
@@ -43,18 +45,26 @@
             <button type="submit">Show Route</button>
         </form>
         <div id="error-message" style="color: red;"></div>
-
+    
         <!-- Bus Information -->
         <div id="bus-info" class="bus-info"></div>
-
+    
+        <!-- Checkbox Controls -->
+         <!-- Not in use now, but can edit this in the future when we have time-->
+        <div id="checkbox-controls" style="display: none;">
+            <label><input type="checkbox" id="main-route-checkbox" checked> Show Main Bus Route</label>
+            <label><input type="checkbox" id="alternative-route-checkbox" checked> Show Alternative Bus Route</label>
+        </div>
+    
         <div id="map-container-wrapper">
             <div class="map-container" id="map-container">
                 <!-- Display default map with MRT lines only initially -->
+                 <!-- This calls from the get_bus_route function in app.py-->
                 {{ bus_route_map | safe }}
             </div>
         </div>
     </div>
-
+    
     <!-- Scrollytelling JavaScript -->
     <script>
         // Function to update the background image based on the visible section
@@ -127,7 +137,7 @@
                         busInfoHtml += '</p>';
                     }
 
-                    // Alternative Bus Routes
+                    // Alternative Bus Routes 
                     if (data.alt_bus_routes && data.alt_bus_routes.length > 0) {
                         busInfoHtml += '<p>We also noticed that there are alternative bus routes with significant overlaps:</p>';
                         busInfoHtml += '<ul>';

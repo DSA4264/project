@@ -5,124 +5,88 @@ import folium
 import geopandas as gpd
 import pandas as pd
 from shapely import wkt
-from shapely.geometry import LineString, MultiLineString, Point
-from typing import Union
 import pickle
 
 app = Flask(__name__)
 
-def multiline_to_single_line(geometry: Union[LineString, MultiLineString]) -> LineString:
-    if isinstance(geometry, LineString):
-        return geometry
-    elif isinstance(geometry, MultiLineString):
-        coords = []
-        for line in geometry.geoms:
-            coords.extend(line.coords)
-        return LineString(coords)
-    else:
-        return LineString()
-
-def plot_bus_service_and_mrt_routes(service_no, gdf):
+def plot_bus_service_and_mrt_routes(service_no, gdf, alternative_service_no=None):
     """
-    Plots the 'geometry' route and all MRT geometries for a given ServiceNo using Folium.
+    Plots the bus routes and MRT lines for a given ServiceNo using Folium.
 
     Parameters:
-    - service_no: str, the service number to search for
-    - gdf: GeoDataFrame, contains the bus and MRT routes data
+    - service_no: str, the main bus service number to plot.
+    - gdf: GeoDataFrame, contains the bus and MRT routes data.
+    - alternative_service_no: str, optional, the alternative bus service number to plot, alternate service will be used in the main html plot.
 
     Returns:
-    - An HTML representation of the Folium map centered on the bus route or MRT geometry.
+    - An HTML representation of the Folium map.
     """
+    # Initialize the map centered on Singapore
+    singapore_coords = [1.3521, 103.8198]
+    m = folium.Map(location=singapore_coords, zoom_start=12, control_scale=True)
+
+    # Plot MRT lines
+    line_colors = {
+        'NS Line': 'red',
+        'EW Line': 'green',
+        'DT Line': 'darkblue',
+        'CC Line': 'yellow',
+        'NE Line': 'purple',
+        'TE Line': 'brown'
+    }
+
+    for line_name, color in line_colors.items():
+        geom_col = f"{line_name.split()[0]}_MRT_geom"
+        mrt_geom = gdf.iloc[0][geom_col]
+        if mrt_geom and not mrt_geom.is_empty:
+            folium.GeoJson(
+                mrt_geom,
+                name=line_name,
+                style_function=lambda x, color=color: {'color': color, 'weight': 2}
+            ).add_to(m)
+
+    # Plot main bus route
     if service_no:
-        # Filter the row with the given service number
         row = gdf[gdf['ServiceNo'] == service_no]
-
-        if row.empty:
+        if not row.empty:
+            bus_route = row.iloc[0]['geometry']
+            if bus_route and not bus_route.is_empty:
+                # Center the map on the bus route
+                m.location = [bus_route.centroid.y, bus_route.centroid.x]
+                m.zoom_start = 13
+                route_name = f"Main Bus Route: {service_no}"
+                main_bus_route_fg = folium.FeatureGroup(name=route_name, overlay=True, control=True)
+                folium.GeoJson(
+                    bus_route,
+                    name=route_name,
+                    style_function=lambda x: {'color': 'black', 'weight': 3}
+                ).add_to(main_bus_route_fg)
+                main_bus_route_fg.add_to(m)
+        else:
             print(f"No data found for ServiceNo: {service_no}")
-            return None
 
-        # Extract the bus route geometry (buffered)
-        bus_route = row.iloc[0]['geometry']
-
-        # Extract the MRT line geometries
-        mrt_geoms = [
-            row.iloc[0]['NS_MRT_geom'],
-            row.iloc[0]['EW_MRT_geom'],
-            row.iloc[0]['DT_MRT_geom'],
-            row.iloc[0]['CC_MRT_geom'],
-            row.iloc[0]['NE_MRT_geom'],
-            row.iloc[0]['TE_MRT_geom']
-        ]
-
-        # Corresponding MRT line colors
-        colors = [
-            'red',         # NS Line
-            'green',       # EW Line
-            'darkblue',    # DT Line
-            'yellow',      # CC Line
-            'purple',      # NE Line
-            'brown'        # TE Line
-        ]
-
-        # Center the map on the centroid of the bus route
-        start_coords = [bus_route.centroid.y, bus_route.centroid.x]  # lat, lon
-
-        # Create a Folium map centered on the bus route
-        m = folium.Map(location=start_coords, zoom_start=13)
-
-        # Plot the bus route in black
-        folium.GeoJson(
-            bus_route,
-            name='Bus Route',
-            style_function=lambda x: {'color': 'black', 'weight': 2, 'fillOpacity': 0.3}
-        ).add_to(m)
-
-        # Plot each MRT line geometry with the corresponding color
-        for mrt_geom, color, name in zip(mrt_geoms, colors, [
-            'NS Line', 'EW Line', 'DT Line', 'CC Line', 'NE Line', 'TE Line'
-        ]):
-            if mrt_geom and not mrt_geom.is_empty:
+    # Plot alternative bus route
+    if alternative_service_no:
+        alt_row = gdf[gdf['ServiceNo'] == alternative_service_no]
+        if not alt_row.empty:
+            alt_bus_route = alt_row.iloc[0]['geometry']
+            if alt_bus_route and not alt_bus_route.is_empty:
+                alt_route_name = f"Alternate Bus Route: {alternative_service_no}"
+                alternative_bus_route_fg = folium.FeatureGroup(name=alt_route_name, overlay=True, control=True)
                 folium.GeoJson(
-                    mrt_geom,
-                    name=name,
-                    style_function=lambda x, color=color: {'color': color, 'weight': 2}
-                ).add_to(m)
-            else:
-                print(f"No geometry found for {name}")
+                    alt_bus_route,
+                    name=alt_route_name,
+                    style_function=lambda x: {'color': 'blue', 'weight': 3, 'dashArray': '5, 5'}
+                ).add_to(alternative_bus_route_fg)
+                alternative_bus_route_fg.add_to(m)
+        else:
+            print(f"No data found for Alternative ServiceNo: {alternative_service_no}")
 
-    else:
-        # If no service number is provided, center the map on Singapore
-        singapore_coords = [1.3521, 103.8198]
-        m = folium.Map(location=singapore_coords, zoom_start=12)
+    # Add Layer Control
+    folium.LayerControl(collapsed=False).add_to(m)
 
-        # Plot MRT lines
-        line_colors = {
-            'NS Line': 'red',
-            'EW Line': 'green',
-            'DT Line': 'darkblue',
-            'CC Line': 'yellow',
-            'NE Line': 'purple',
-            'TE Line': 'brown'
-        }
-
-        for line_name, color in line_colors.items():
-            geom_col = f"{line_name.split()[0]}_MRT_geom"
-            mrt_geom = gdf.iloc[0][geom_col]
-            if mrt_geom and not mrt_geom.is_empty:
-                folium.GeoJson(
-                    mrt_geom,
-                    name=line_name,
-                    style_function=lambda x, color=color: {'color': color, 'weight': 2}
-                ).add_to(m)
-            else:
-                print(f"No geometry found for {line_name}")
-
-    # Add a layer control to switch between routes
-    folium.LayerControl().add_to(m)
-
-    # Return the HTML representation of the map
     return m._repr_html_()
-    
+
 def get_overlap_messages(row):
     # Extract MRT overlap percentages
     mrt_overlap_percentages = {}
@@ -150,6 +114,7 @@ def get_overlap_messages(row):
         mrt_overlap_messages.append(overlap_text)
 
     # Collect alternative bus routes
+    # This is read in from our csv file
     alt_bus_routes = []
     for i in range(1, 4):
         alternative_bus = row.get(f'Top_{i}_Alternative_Bus', None)
@@ -159,12 +124,13 @@ def get_overlap_messages(row):
 
     return mrt_overlap_messages, alt_bus_routes
 
+# Used to pull the data to read category
 def get_bus_category(row):
     # Updated function to handle NaN values
     if 'Category' in row.index and pd.notnull(row['Category']):
         return row['Category']
     else:
-        return 'Unknown'
+        return 'UNDEFINED'
 
 # Load GeoDataFrame and model data
 file_path = 'data/buffered_bus_mrt_combined_gdf.pkl'
@@ -211,10 +177,10 @@ bus_mrt_combined_gdf = bus_mrt_combined_gdf.merge(
 def index():
     sections = [
         {"id": "section1", "image": "image1.png", "text": "This is a map of Singapore."},
-        {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA and OneMapAPI, we mapped out MRT lines in Singapore."},
-        {"id": "section3", "image": "image3.png", "text": "We then mapped out all the bus routes in Singapore and then buffered."},
+        {"id": "section2", "image": "image2.png", "text": "Using data obtained from LTA and OneMapAPI, we mapped out MRT lines in Singapore. The buffered the MRT lines by 400m."},
+        {"id": "section3", "image": "image3.png", "text": "We then mapped out all the bus routes in Singapore and then buffered it by 400m."},
     ]
-
+    # Not in use now, but when we have time, we can do a full webpage write up of our findings using scrollytelling.
     main_story_content = {
         "heading": "Explanation of results",
         "text": "Based on your bus route selection, we figured out that xxxx",
@@ -225,7 +191,7 @@ def index():
             }
         ]
     }
-
+    # Render the default map with no bus line first. Only showing the buffered MRT Lines
     default_map = plot_bus_service_and_mrt_routes(service_no=None, gdf=bus_mrt_combined_gdf)
 
     return render_template(
@@ -237,6 +203,17 @@ def index():
 
 @app.route('/get_bus_route', methods=['POST'])
 def get_bus_route():
+    """
+    Plots the bus routes and MRT lines for a given ServiceNo using Folium.
+
+    Parameters:
+    - No input
+    
+    Returns:
+    - A jsonified response.
+    - Also includes the alternate bus plot
+    """
+
     data = request.get_json()
     service_no = data.get('service_no').strip()
     row_df = bus_mrt_combined_gdf[bus_mrt_combined_gdf['ServiceNo'] == service_no]
@@ -249,9 +226,18 @@ def get_bus_route():
         }
     else:
         row = row_df.iloc[0]
-        bus_route_map = plot_bus_service_and_mrt_routes(service_no, bus_mrt_combined_gdf)
-        mrt_overlap_messages, alt_bus_routes = get_overlap_messages(row)
         bus_category = get_bus_category(row)
+        mrt_overlap_messages, alt_bus_routes = get_overlap_messages(row)
+
+        # Get the first alternative bus service number
+        # This is the most overlapped service
+        alternative_service_no = row.get('Top_1_Alternative_Bus', None)
+        if pd.notnull(alternative_service_no):
+            alternative_service_no = str(alternative_service_no)  # Ensure it's a string
+        else:
+            alternative_service_no = None
+
+        bus_route_map = plot_bus_service_and_mrt_routes(service_no, bus_mrt_combined_gdf, alternative_service_no)
 
         response = {
             'error_message': None,
