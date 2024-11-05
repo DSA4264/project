@@ -43,24 +43,16 @@
             <button type="submit">Show Route</button>
         </form>
         <div id="error-message" style="color: red;"></div>
+
+        <!-- Bus Information -->
+        <div id="bus-info" class="bus-info"></div>
+
         <div id="map-container-wrapper">
             <div class="map-container" id="map-container">
                 <!-- Display default map with MRT lines only initially -->
                 {{ bus_route_map | safe }}
             </div>
         </div>
-    </div>
-
-    <!-- New Section with Heading, Text, and Images -->
-    <div class="content-section">
-        <h2>{{ main_story_content.heading }}</h2>
-        <p>{{ main_story_content.text }}</p>
-
-        {% for section in main_story_content.sections %}
-        <h3>{{ section.subheading }}</h3>
-        <img src="{{ url_for('static', filename=section.image) }}" alt="{{ section.subheading }}" style="width:100%; max-width:600px; margin:20px 0;">
-        <p>{{ section.description }}</p>
-        {% endfor %}
     </div>
 
     <!-- Scrollytelling JavaScript -->
@@ -106,11 +98,13 @@
             .then(data => {
                 const errorDiv = document.getElementById('error-message');
                 const mapContainerWrapper = document.getElementById('map-container-wrapper');
+                const busInfoDiv = document.getElementById('bus-info');
 
                 // Display error message if any
                 if (data.error_message) {
                     errorDiv.textContent = data.error_message;
                     mapContainerWrapper.innerHTML = ''; // Clear map if error
+                    busInfoDiv.innerHTML = ''; // Clear bus info if error
                 } else {
                     errorDiv.textContent = '';
                     // Replace the entire map container
@@ -120,6 +114,15 @@
                     newMapContainer.innerHTML = `<h2>Bus Route for Service No: ${data.service_no}</h2>${data.bus_route_map}`;
                     mapContainerWrapper.innerHTML = ''; // Clear previous map
                     mapContainerWrapper.appendChild(newMapContainer);
+
+                    // Display additional bus information
+                    let busInfoHtml = `<p>Your bus number, <strong>${data.service_no}</strong>, is a <strong>${data.Category}</strong> bus service.</p>`;
+                    busInfoHtml += '<ul>';
+                    data.overlap_messages.forEach(function(message) {
+                        busInfoHtml += `<li>${message}</li>`;
+                    });
+                    busInfoHtml += '</ul>';
+                    busInfoDiv.innerHTML = busInfoHtml;
                 }
             })
             .catch(error => {

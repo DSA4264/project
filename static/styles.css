@@ -68,3 +68,11 @@ body, html {
     padding: 50px;
     text-align: justify;
 }
+
+.bus-info {
+    padding: 20px;
+    background-color: #e8f4f8;
+    margin: 20px 0;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
