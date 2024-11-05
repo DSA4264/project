@@ -40,6 +40,35 @@
 
 ---
 
+## Project Set Up
+Obligatory Reminder: This project results findings and opinions are all of our own.
+<br>
+Our main coding langugage is Python. We chose Python as it has the most library frameworks that works well with our project, and also for the ease of coding.
+<br>
+Our project can be split into 3 components:
+1. Data Analytics
+2. Backend 
+3. Frontend
+
+In this technical report, we will focus mainly on the **data analytics**.
+
+### Repository
+Our GitHub repo can be found [here](https://github.com/DSA4264/project/tree/main). Instructions to run the code can be found in our README.md.
+
+### Backend and Frontend
+
+#### Frontend
+The goal of our frontend was to build an interactive such that the user will be able to input any bus data they want to see. 
+
+Our frontend was made using HTML and some JavaScript and was split as scrollytelling and an interactive map function. The scrollytelling section was made using HTML, serving as a simple methodology to let the users know what they are seeing.
+
+The second section was made using both HTML and Folium.js. Folium.js is a JavaScript framework that creates an interactive map where the user can scroll, zoom, and control the layers.
+
+#### Backend
+The backend was done using Python Flask. We included 2 main functions:
+1. Map generation
+2. Bus route plotting + suggestions.
+
 ## 1. Introduction
 We were approached by the Land Transport Authority (LTA) to use their publicly available datasets to address the issue of redundant bus routes. 
 
