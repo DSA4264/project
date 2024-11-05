@@ -4,6 +4,7 @@
 1. [Introduction](#1-introduction)  
    1.1 [Problem Statement](#11-problem-statement)  
    1.2 [Background](#12-background)  
+   1.3 [Success Criteria](#13-project-success)
 
 2. [Data](#2-data)  
    2.1 [Datasets Used](#21-datasets-used)  
@@ -41,10 +42,10 @@
 ---
 
 ## Project Set Up
-Obligatory Reminder: This project results findings and opinions are all of our own.
-<br>
-Our main coding langugage is Python. We chose Python as it has the most library frameworks that works well with our project, and also for the ease of coding.
-<br>
+Obligatory reminder: This project results findings and opinions are all of our own. Our findings and results are not related to the National University of Singapore.
+
+Our main coding langugage is Python. We chose Python as it has the most library frameworks that works well with our project, and also for the ease of coding since we are all proficient coding with Python.
+
 Our project can be split into 3 components:
 1. Data Analytics
 2. Backend 
@@ -56,40 +57,52 @@ In this technical report, we will focus mainly on the **data analytics**.
 Our GitHub repo can be found [here](https://github.com/DSA4264/project/tree/main). Instructions to run the code can be found in our README.md.
 
 ### Backend and Frontend
+This is a rough overview of our backend and frontend approach.
 
 #### Frontend
-The goal of our frontend was to build an interactive such that the user will be able to input any bus data they want to see. 
+The goal of our frontend was to build an interactive such that the user will be able to input any bus data they want to see. Styling was done within `styles.css`
 
 Our frontend was made using HTML and some JavaScript and was split as scrollytelling and an interactive map function. The scrollytelling section was made using HTML, serving as a simple methodology to let the users know what they are seeing.
 
-The second section was made using both HTML and Folium.js. Folium.js is a JavaScript framework that creates an interactive map where the user can scroll, zoom, and control the layers.
+The second section was made using both HTML and Leaflet.js. Leaflet.js is a JavaScript framework that calls on Folium, which creates an interactive map where the user can scroll, zoom, and control the layers.
 
 #### Backend
 The backend was done using Python Flask. We included 2 main functions:
 1. Map generation
-2. Bus route plotting + suggestions.
+2. Bus route plotting + Bus alternative suggestions.
+
+The functions were obtained and modified from `main.ipynb`
 
 ## 1. Introduction
 We were approached by the Land Transport Authority (LTA) to use their publicly available datasets to address the issue of redundant bus routes. 
 
 ### 1.1 Problem Statement
-Our project focuses on two main objectives:
+The main problem is as such: Identify 3 redundant bus routes
+
+In reality, we cannot solve this issue using a one-step approach. We needed to break this problem down into two sub-problems:
 1. Identify approximately 10 bus routes that could be discontinued, based primarily on their overlap with MRT lines.
 2. Among the identified bus routes, determine additional factors that might affect rider sentiment, and narrow down to three redundant bus routes.
 
 ### 1.2 Background
-In October 2023, LTA announced that it would be [discontinuing bus service "167"](https://www.straitstimes.com/singapore/bus-service-167-to-be-terminated-from-dec-10), citing “falling ridership numbers due to the construction of the Thomson-East Coast Line (TEL)” as the primary reason. This decision led to widespread discussion, with many riders of bus service 167 voicing that they found it unfair.
+In October 2023, LTA announced that it would be [discontinuing bus service "167"](https://www.straitstimes.com/singapore/bus-service-167-to-be-terminated-from-dec-10), citing “falling ridership numbers due to the construction of the Thomson-East Coast Line (TEL)” as the primary reason. The announcement quickly sparked a wave of public response, with many regular commuters of bus 167 voicing their concerns and finding the move unwarranted.
 
-In a rare move by the Singaporean government, they later [reversed this decision](https://www.straitstimes.com/singapore/transport/lta-u-turns-on-decision-to-stop-bus-service-167-route-to-be-retained-with-30-minute-intervals), choosing to retain the bus service, albeit with increased intervals from 10 to 30 minutes. However, LTA emphasised that this was an exceptional case and that more bus services could be cut in the future.
+In an unusual turn of events, the Singapore government later [reversed this decision](https://www.straitstimes.com/singapore/transport/lta-u-turns-on-decision-to-stop-bus-service-167-route-to-be-retained-with-30-minute-intervals), opting to retain bus service 167 with increased intervals from 10 to 30 minutes. This reversal is a rare occurrence; to the best of our knowledge, no other policy decision regarding public transport has seen such a turnaround.
 
-This incident highlights a lack of a robust data science methodology within LTA to identify supposedly "redundant" bus routes. Fortunately, we are a team of data science students who use public buses daily. Using a combination of data analytics and machine learning techniques, we aim to address this issue.
+The LTA’s reasoning for the initial decision was grounded in basic economic principles: observing a decline in demand for the service and recognising the limited supply of buses in Singapore, it made sense, on paper, to reduce redundancy. However, our analysis suggests that bus service 167 might not have been the ideal choice for removal. Nonetheless, as with the LTA, we see the necessity for streamlining certain routes in the future.
+
+This incident points to a possible lack of a comprehensive data science framework within the LTA to assess and identify truly “redundant” bus routes. As a team of data science students and daily bus users, we have undertaken this project to address this gap, applying data analytics and basic clustering techniques to develop a more informed approach to route optimisation.
+
+### 1.3 Project Success
+There will be 2 main success criterias:
+1. Efficient allocation: Optimise the bus service in Singapore by removing redundant bus routes and using the resources to other more pressing bus services.
+2. Consumer satisfaction: Although hard to measure, we are hoping to not have a repeat of the 167 incident, and ensure that minimal disruptions in the life of commuters.
 
 ## 2. Data
 
 ### 2.1 Datasets Used
 Before delving into the analytics, we would like to reemphasise that we are using publicly available dataset, which were obtained mainly from the LTA Datamall and OneMapAPI. 
-<br>
-We used our own API keys to obtain the data, and we have included our data pulling code in our Jupyter Notebook.
+
+We used our own API keys to obtain the data, and we have included our data pulling code in the `data` folder.
 
 #### 2.1.1 LTA Datamall
 We obtained the following data from the LTA Datamall API:
