@@ -1,8 +1,5 @@
-import os
-import json
 from flask import Flask, render_template, request, jsonify
 import folium
-import geopandas as gpd
 import pandas as pd
 from shapely import wkt
 import pickle

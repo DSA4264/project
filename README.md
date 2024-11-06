@@ -17,7 +17,7 @@ This project is part of the DSA4264 module at the National University of Singapo
 
 ## Introduction
 
-This project leverages data analysis to evaluate bus route efficiency in Singapore and aims to identify routes that can be optimized or removed to improve public transportation efficiency.
+This project leverages data analysis to evaluate bus route efficiency in Singapore and aims to identify routes that can be optimised or removed to improve public transportation efficiency.
 
 ## Installation
 
@@ -61,11 +61,13 @@ To set up the project on your local machine, follow these steps:
     python data_pulling.py
     ```
 
-5. **Analyze and view results** by opening the `main.ipynb` Jupyter notebook. Run all cells to review the analytics, code logic, and decision-making process behind identifying bus routes for removal.
+5. **Process the data** by running `data_processing.ipynb`. Click on Run all, and this will clean and process the data accordingly. Do note that some functions, such as OSRM will take approximately 5 hours to run.
+
+6. **Analyze and view results** by opening the `main.ipynb` Jupyter notebook. Run all cells to review the analytics, code logic, and decision-making process behind identifying bus routes for removal.
 
 ## Usage
 
-After setting up the `.env` file and running the data collection script + Jupyter Notebook, you can launch the Flask application to visualise the data:
+After setting up the `.env` file and running `data_pulling.py` + `data_processing.ipynb` + `main.ipynb`, you can launch the Flask application to visualise the data:
 
 ```bash
 python app.py
@@ -90,6 +92,7 @@ This project uses **Python 3.11.5**. All other dependencies are listed in `requi
 ## Credits
 This project was completed in five weeks and was completed by (in no order of contribution): 
 - Brandon NEO (NUS Y4 DSE)
-- CHONG Xin Tian (NUS Y4 DSE)
+- CHOW Xin Tian (NUS Y4 DSE)
 - LIM Choon Hao (NUS Y4 DSA)
 - YOUNG Zhan Heng (NUS Y4 DSE)
+We will also like to thank your Adjunct Lecturer, Shaun Khoo, for guiding us throughout this project.
