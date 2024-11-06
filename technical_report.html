@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>technical_report.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="technical-report">Technical Report</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<p><a href="#project-set-up">Project Setup</a></p>
+<ol>
+<li>
+<p><a href="#1-introduction">Introduction</a><br>
+1.1 <a href="#11-problem-statement">Problem Statement</a><br>
+1.2 <a href="#12-background">Background</a><br>
+1.3 <a href="#13-success-criteria">Success Criteria</a></p>
+</li>
+<li>
+<p><a href="#2-project-setup">Scope</a><br>
+2.1 <a href="#21-repository">Problem</a><br>
+2.2 <a href="#22-backend-and-frontend">Success Criteria</a><br>
+2.3 [Assumptions]</p>
+</li>
+<li>
+<p><a href="#3-methodology">Methodology</a><br>
+3.1 <a href="#31-technical-assumptions">Technical Assumptions</a><br>
+3.2 <a href="#32-data">Data</a><br>
+3.2.1 <a href="#321-datasets-used">Datasets Used</a><br>
+3.2.1.1 <a href="#3211-lta-datamall">LTA DataMall</a><br>
+3.2.1.2 <a href="#3212-onemap-api">OneMap API</a><br>
+3.2.1.3 <a href="#3213-wikipedia">Wikipedia</a><br>
+3.2.1.4 <a href="#3214-osrm-api">OSRM API</a><br>
+3.2.1.5 <a href="#3215-department-of-statistics">Department of Statistics</a><br>
+3.2.2 <a href="#322-data-cleaning">Data Cleaning</a><br>
+3.3 <a href="#33-phase-one">Phase One</a><br>
+3.3.1 <a href="#331-creating-the-base-map">Creating the Base Map</a><br>
+3.3.2 <a href="#332-processing-bus-routes">Processing Bus Routes</a><br>
+3.3.3 <a href="#333-processing-mrt-lines">Processing MRT Lines</a><br>
+3.3.4 <a href="#334-combining-into-one-dataframe">Combining into One DataFrame</a><br>
+3.3.5 <a href="#335-calculating-mrt-bus-parallelism-filter-1-overlap-percentage">Calculating MRT-BUS Parallelism (Filter 1: Overlap Percentage)</a>
+3.3.6 <a href="#336-handling-nan-data-filter-2">Handling NaN Data (Filter 2)</a>
+3.4 <a href="#34-phase-two-consumer-sentiment">Phase Two: Consumer Sentiment</a><br>
+3.4.1 <a href="#341-additional-feature-engineering">Additional Feature Engineering</a><br>
+3.4.1.1 <a href="#3411-passenger-volume-od-data">Passenger Volume OD Data</a><br>
+3.4.1.2 <a href="#3412-bus-routes-distance">Bus Routes Distance</a><br>
+3.4.1.3 <a href="#3413-population-served">Population Served</a><br>
+3.4.1.4 <a href="#3414-bus-frequency">Bus Frequency</a><br>
+3.4.1.5 <a href="#3415-alternative-bus-services">Alternative Bus Services</a><br>
+3.4.2 <a href="#342-plotting-functions">Plotting Functions</a><br>
+3.4.3 <a href="#343-creating-a-scoring-system">Creating a Scoring System</a></p>
+</li>
+<li>
+<p><a href="#4-results">Results</a><br>
+4.1 <a href="#41-scoring-system">Scoring System</a><br>
+4.2 <a href="#42-proposed-changes-to-bus-routes">Proposed Changes to Bus Routes</a></p>
+</li>
+<li>
+<p><a href="#5-discussion">Discussion</a><br>
+5.1 <a href="#51-improving-our-methodology">Improving Our Methodology</a><br>
+5.2 <a href="#52-limitations">Limitations</a><br>
+5.3 <a href="#53-future-work">Future Work</a></p>
+</li>
+<li>
+<p><a href="#6-conclusion">Conclusion</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="project-set-up">Project Set Up</h2>
+<p>Our main programming language is Python. We chose Python because it offers extensive library frameworks that are well-suited for our project and because we are all proficient in coding with Python.</p>
+<p>Our project can be split into two components:</p>
+<ol>
+<li>Data Analytics</li>
+<li>Backend and Frontend</li>
+</ol>
+<p>In this technical report, we will focus mainly on <strong>Data Analytics</strong>.</p>
+<h3 id="repository">Repository</h3>
+<p>Our GitHub repository can be found <a href="https://github.com/DSA4264/project">here</a>. Instructions to run the code can be found in our README.md.</p>
+<h3 id="backend-and-frontend">Backend and Frontend</h3>
+<p>This is a rough overview of our backend and frontend approach.</p>
+<h4 id="frontend">Frontend</h4>
+<p>The goal of our frontend was to build an interactive interface that allows users to input any bus data they wish to see. Styling was done within styles.css.</p>
+<p>Our frontend was created using HTML and some JavaScript, and was split into a scrollytelling section and an interactive map function. The scrollytelling section was made using HTML, serving as a simple methodology to inform users about what they are seeing.</p>
+<p>The second section was made using both HTML and Leaflet.js. Leaflet.js is a JavaScript framework that interfaces with Folium, which creates an interactive map where users can scroll, zoom, and control the layers.</p>
+<h4 id="backend">Backend</h4>
+<p>The backend was implemented using Python Flask. We included two main functions:</p>
+<ol>
+<li>Map generation</li>
+<li>Bus route plotting and bus alternative suggestions</li>
+</ol>
+<p>These functions were obtained and modified from main.ipynb.</p>
+<hr>
+<h2 id="1-introduction">1. Introduction</h2>
+<p>Obligatory reminder: The findings and opinions presented in this project are solely our own and are not affiliated with or endorsed by the National University of Singapore.</p>
+<p>We were approached by the Land Transport Authority (LTA) to utilise their publicly available datasets to address the issue of redundant bus routes.</p>
+<h3 id="11-background">1.1 Background</h3>
+<p>In October 2023, LTA announced that it would be <a href="https://www.straitstimes.com/singapore/bus-service-167-to-be-terminated-from-dec-10">discontinuing bus service 167</a>, citing “falling ridership numbers due to the construction of the Thomson-East Coast Line (TEL)” as the primary reason. The announcement quickly sparked a wave of public response, with many regular commuters of bus 167 voicing their concerns and finding the move unwarranted.</p>
+<p>In an unusual turn of events, the Singapore government later <a href="https://www.straitstimes.com/singapore/transport/lta-u-turns-on-decision-to-stop-bus-service-167-route-to-be-retained-with-30-minute-intervals">reversed this decision</a>, opting to retain bus service 167 with increased intervals from 10 to 30 minutes. This reversal is a rare occurrence; to the best of our knowledge, no other policy decision regarding public transport has seen such a turnaround.</p>
+<p>The LTA’s reasoning for the initial decision was grounded in basic economic principles: observing a decline in demand for the service and recognising the limited supply of buses in Singapore, it made sense, on paper, to reduce redundancy. However, our analysis suggests that bus service 167 might not have been the ideal choice for removal. Nonetheless, as with the LTA, we see the necessity for streamlining certain routes in the future.</p>
+<p>This incident points to a possible lack of a comprehensive data science framework within the LTA to assess and identify truly “redundant” bus routes. As a team of data science students and daily bus users, we have undertaken this project to address this gap, applying data analytics and basic clustering techniques to develop a more informed approach to route optimisation.</p>
+<hr>
+<h2 id="2-scope">2. Scope</h2>
+<h3 id="21-problem">2.1 Problem</h3>
+<p>The Land Transport Authority (LTA) is currently facing challenges in determining and managing redundant bus routes in Singapore’s public transportation network. With the introduction of new MRT lines, areas and routes previously served by buses can now be serviced by MRTs. This leads to a decrease in ridership on certain bus routes. As LTA continues to allocate resources to operate these underutilised routes, it results in operational inefficiencies and increased costs. However, cancelling these underutilised routes may cause customer dissatisfaction, as evidenced by the case of bus 167.</p>
+<p>Failure to address this problem has significant financial and reputational impacts.</p>
+<p>Financially, redundant routes compel the LTA to spend more on operating costs such as fuel and labour. By rerouting the buses, LTA could potentially reduce costs by minimising duplicated services.</p>
+<p>Operationally, poorly rerouted routes can lead to commuter dissatisfaction, as seen in the case of bus 167. The reversal of the decision led to higher costs, tarnished LTA's image, and diminished public trust, portraying LTA as indecisive or ineffective.</p>
+<p>Tangibly, the costs of not addressing this problem include maintaining underutilised routes and potentially conducting surveys on customer satisfaction for the current unoptimised routes.</p>
+<p>Data science is appropriate here because spatial data and data on ridership and buses are large and complex, and data science provides a platform to analyse such data. It allows us to have a scalable and replicable framework for identifying redundant bus routes while also considering additional features so we can analyse and make adjustments based on changes in ridership patterns over time. With new MRT lines being introduced, LTA can adapt our methodology to tackle the issue of managing redundant bus services.</p>
+<p>The main problem is as follows: Identify three redundant bus routes using data science methodology.</p>
+<p>In reality, we cannot solve this issue using a one-step approach. We needed to break this problem down into two sub-problems:</p>
+<ol>
+<li>Identify approximately ten bus routes for each MRT line that could be discontinued, based primarily on their overlap with MRT lines. Here, we use overlap as a proxy for redundancy, as bus services that have high parallelism with MRT lines are likely to be duplicates for that particular portion of the journey.</li>
+<li>Among the identified bus routes, determine additional factors that might affect rider sentiment, and narrow down to three redundant bus routes.</li>
+</ol>
+<h3 id="22-success-criteria">2.2 Success Criteria</h3>
+<p>There are two main success criteria:</p>
+<ol>
+<li>
+<p><strong>Efficient allocation of resources</strong>: Optimise bus services in Singapore by removing redundant bus routes and reallocating resources to other, more pressing bus services. Success here could be measured by the number of bus routes identified for rerouting and a reduction in waiting times for the more essential bus services.</p>
+</li>
+<li>
+<p><strong>Consumer satisfaction</strong>: Although hard to measure, we aim to avoid a repeat of the bus 167 incident and ensure minimal disruptions in commuters' lives. Success could be assessed by monitoring commuter feedback and satisfaction through surveys, as well as tracking commuter complaints.</p>
+</li>
+</ol>
+<h3 id="23-assumptions">2.3 Assumptions</h3>
+<p>We are assuming that LRT lines do not have much influence when calculating overlap percentage between a bus service and an MRT line. This is because for certain planning areas like Punggol, LRT serves as an alternative to feeder buses to MRT stations. But, in our analysis, we would prefer to focus directly on trunk services so not including LRT is similar to how we filtered feeder buses out.</p>
+<p>Our second assumption is that the data retrieved from Onemap API, LTA Datamall, department of statistics and OSRM API is accurate and up to date. Without this assumption, our bus routes and MRT lines may not be accurate which affects our analysis</p>
+<p>Our third assumption is that passengers are rational and will choose the most time efficient route if both MRT and buses are available. This allows us to equate overlap percentage as being redundant which may not be true if passengers for instance prefer buses over MRT for other reasons such as cost.</p>
+<hr>
+<h2 id="3-methodology">3. Methodology</h2>
+<h3 id="31-technical-assumptions">3.1 Technical Assumptions</h3>
+<p>We are assuming that LTA Datamall’s Passenger Volume Origin-Destination (OD) Bus Stops data can serve as a good representation of the demand and ridership for each bus service. This is because while we are able to get the total passenger trips for every origin-destination bus stop pair, we are unable to obtain specific bus service’s passenger trip figures since there may be other bus services that also have the same origin-destination pair in its bus routes.</p>
+<p>Our second assumption is that the overlap percentage between a bus route and an MRT line implies they serve the same transportation needs by running in parallel. For example, a bus service may connect two MRT stations but the route is not a direct or fully parallel path. So, the bus makes several stops to serve additional neighbourhoods and subareas before reaching the MRT station. Even though in theory, this particular bus route has a high overlap percentage with the MRT line, the bus service and MRT actually serve different transportation needs. Overlap percentage might not be a true indicator of how parallelism works.</p>
+<h3 id="32-data">3.2 Data</h3>
+<h4 id="321-datasets-used">3.2.1 Datasets Used</h4>
+<p>Before delving into the analytics, we would like to emphasise that we are using publicly available datasets, which were obtained mainly from the LTA DataMall and OneMap API.</p>
+<p>We used our own API keys to obtain the data, and we have included our data pulling code in the <code>data</code> folder.</p>
+<h5 id="3211-lta-datamall">3.2.1.1 LTA DataMall</h5>
+<p>We obtained the following data from the LTA DataMall API:</p>
+<ol>
+<li>Bus Stops data</li>
+<li>Bus Routes data</li>
+<li>Bus Services data</li>
+<li>Passenger Volume OD Bus Stop data</li>
+<li>Geospatial shapefiles for Bus and MRT</li>
+</ol>
+<h5 id="3212-onemap-api">3.2.1.2 OneMap API</h5>
+<p>We obtained the following data from the OneMap API:</p>
+<ol>
+<li>Planning Areas shapefile</li>
+</ol>
+<h5 id="3213-wikipedia">3.2.1.3 Wikipedia</h5>
+<p>We obtained the following data from Wikipedia:</p>
+<ol>
+<li>MRT station names</li>
+</ol>
+<h5 id="3214-open-source-routing-machine-osrm-api">3.2.1.4 Open Source Routing Machine (OSRM) API</h5>
+<ol>
+<li>Bus routes mapping</li>
+</ol>
+<h5 id="3215-department-of-statistics">3.2.1.5 Department of Statistics</h5>
+<ol>
+<li>Population Areas by Planning Areas data</li>
+</ol>
+<h4 id="322-data-cleaning">3.2.2 Data Cleaning</h4>
+<p>Data cleaning was relatively straightforward, compared to most datasets found online, since the data we are using was taken from public datasets from established APIs such as OneMap API and LTA DataMall.</p>
+<hr>
+<p><img src="static/fc1.png" alt="Flow Chart of Methodology"></p>
+<h3 id="33-phase-one-filtering-parallel-routes">3.3 Phase One: Filtering Parallel Routes</h3>
+<p>We conducted two phases of filtering. The first phase involved parallelisation filtering—among all the bus services in Singapore, we compared their routes to determine if there was a high percentage overlap with the MRT.</p>
+<p>In the second phase, we conducted distance filtering. This was necessary because some buses are labelled as 'NaN' by LTA DataMall, making it impossible for us to determine if they are trunk or feeder services. More details are elaborated below.</p>
+<h4 id="331-creating-the-base-map">3.3.1 Creating the Base Map</h4>
+<p>The base plot of the map we used was created using Folium, a Python package. We then created the polygons and plots and overlaid them on our interactive map. At the end of our map creation, we output it using a Python Flask framework. We used Leaflet.js to visualise the Folium map.</p>
+<h4 id="332-processing-bus-routes">3.3.2 Processing Bus Routes</h4>
+<p>To map all bus routes available in Singapore, we utilised the OSRM API to plot each route segment between consecutive bus stops along the road network. This methodology involved several key steps:</p>
+<ol>
+<li>
+<p><strong>Data Preparation and Grouping</strong>: We began by grouping the dataset of bus routes by each unique 'ServiceNo' (bus service number) and 'Direction'. To ensure that each route was traced in the correct sequence, the data was sorted by 'StopSequence', aligning each bus stop in the order the route follows.</p>
+</li>
+<li>
+<p><strong>Retrieving Route Segments Using OSRM</strong>: For each pair of consecutive bus stops within a route, we issued an OSRM API query to retrieve the encoded polyline representing the road network path between the stops. The OSRM API provides a polyline encoding format that captures the sequence of coordinates between stops, which we stored for further analysis.</p>
+</li>
+</ol>
+<pre class="hljs"><code><div>def get_osrm_encoded_route(start_coords, end_coords):
+    osrm_url = f<span class="hljs-string">"http://router.project-osrm.org/route/v1/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}?geometries=polyline"</span>
+    response = requests.get(osrm_url)
+    <span class="hljs-keyword">if</span> response.status_code == 200:
+        data = response.json()
+        <span class="hljs-keyword">if</span> <span class="hljs-string">'routes'</span> <span class="hljs-keyword">in</span> data and len(data[<span class="hljs-string">'routes'</span>]) &gt; 0:
+            <span class="hljs-built_in">return</span> data[<span class="hljs-string">'routes'</span>][0][<span class="hljs-string">'geometry'</span>]  <span class="hljs-comment">## returns encoded polyline</span>
+    <span class="hljs-built_in">return</span> None
+
+
+<span class="hljs-comment">## creating sg map</span>
+map_of_all_bus_routes = folium.Map(location=[1.3521, 103.8198], zoom_start=12)
+unique_services = bus_df_w_routes_and_coordinates[<span class="hljs-string">'ServiceNo'</span>].unique()[:600]
+
+
+<span class="hljs-comment">## filter for unique buses</span>
+filtered_bus_df = bus_df_w_routes_and_coordinates[bus_df_w_routes_and_coordinates[<span class="hljs-string">'ServiceNo'</span>].isin(unique_services)]
+bus_routes_grouped = filtered_bus_df.groupby([<span class="hljs-string">'ServiceNo'</span>, <span class="hljs-string">'Direction'</span>])
+
+
+output_data = []
+line_color = <span class="hljs-string">'blue'</span>  
+
+
+<span class="hljs-keyword">for</span> (service_no, direction), group <span class="hljs-keyword">in</span> bus_routes_grouped:
+   
+    group = group.sort_values(by=<span class="hljs-string">'StopSequence'</span>) <span class="hljs-comment">## sort group by stopsequence</span>
+    bus_stops = list(zip(group[<span class="hljs-string">'Latitude'</span>], group[<span class="hljs-string">'Longitude'</span>]))
+   
+    <span class="hljs-comment">## get subsequent roads for next busstops</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(len(bus_stops) - 1):
+        start_coords = bus_stops[i]
+        end_coords = bus_stops[i + 1]
+       
+       
+        encoded_route = get_osrm_encoded_route(start_coords, end_coords) <span class="hljs-comment">##encoded route between busstops</span>
+        <span class="hljs-keyword">if</span> encoded_route:
+            output_data.append({
+                <span class="hljs-string">"ServiceNo"</span>: service_no,
+                <span class="hljs-string">"Direction"</span>: direction,
+                <span class="hljs-string">"EncodedPolyline"</span>: encoded_route
+            })
+           
+            decoded_route = polyline.decode(encoded_route) <span class="hljs-comment">## decode encoded polyline to lat long</span>
+           
+            <span class="hljs-comment">## map decoded route on the sg map</span>
+            folium.PolyLine(decoded_route, color=line_color, weight=2.5, opacity=1,
+                            popup=f<span class="hljs-string">"Bus {service_no} Direction {direction}"</span>).add_to(map_of_all_bus_routes)
+
+
+<span class="hljs-comment">## convert output data to df</span>
+df_encoded_polylines = pd.DataFrame(output_data)
+<span class="hljs-comment">## save to csv</span>
+df_encoded_polylines.to_csv(<span class="hljs-string">'data/encoded_polylines_output.csv'</span>, index=False)
+map_of_all_bus_routes
+</div></code></pre>
+<ol start="3">
+<li><strong>Creating a Unified Bus Service Geometry Object</strong>: The OSRM API outputs a polyline encoding for every line segment between every pair of bus stops coordinates, and <code>df_encoded_polylines</code> stores this polyline encoding for every 'ServiceNo' and for every pair of origin-destination bus stops. We decoded the polyline encoding to get a LineString geometry representation for the road network path between every pair of bus stops. To get a unified geometry object for every 'ServiceNo', we grouped by 'ServiceNo' and utilised the <code>shapely</code> library's <code>linemerge</code> to combine all the LineString geometry objects into a MultiLineString geometry object.</li>
+</ol>
+<h4 id="333-processing-mrt-lines">3.3.3 Processing MRT Lines</h4>
+<p>We processed MRT geospatial data from Singapore’s LTA DataMall to create unified geometry objects for each MRT line, allowing for analysis of route parallelism with bus lines. The steps involved were:</p>
+<ol>
+<li>
+<p><strong>Coordinate Reference System (CRS)</strong>: We set the data’s CRS to EPSG:3414, then transformed it to EPSG:4326 for geographic compatibility.</p>
+</li>
+<li>
+<p><strong>Station Ordering and Categorisation</strong>: Stations were grouped by MRT line and ordered to connect them accurately along each route.</p>
+</li>
+<li>
+<p><strong>Centroid Representation</strong>: Each station’s polygon(s) geometry was represented by a centroid, enabling a simplified line route. This is because there exist MRT stations with multiple Polygon objects; taking the centroids of multiple Polygons gives us a more accurate representation of where the MRT station is located.</p>
+</li>
+<li>
+<p><strong>Line Creation</strong>: We connected centroids sequentially to form a LineString for each MRT line, outlining its path.</p>
+</li>
+<li>
+<p><strong>Buffering of Lines</strong>: We then created a 400m buffer for each LineString.</p>
+</li>
+<li>
+<p><strong>Union of Buffered Line and Polygons</strong>: Each MRT line’s buffered LineString geometry and its station Polygons were merged into a single geometry object using the <code>shapely</code> library’s <code>unary_union</code> function to achieve a singular geometry object representing the MRT line.</p>
+</li>
+</ol>
+<h4 id="334-combining-into-one-dataframe">3.3.4 Combining into One DataFrame</h4>
+<p>The MRT geometries were added to <code>df_bus_combined_geometry</code> alongside bus routes geometries, enabling parallelism analysis across bus and MRT networks in Singapore.</p>
+<h4 id="335-calculating-mrt-bus-parallelism-filter-1-overlap-percentage">3.3.5 Calculating MRT-BUS Parallelism (Filter 1: Overlap Percentage)</h4>
+<p>Overlap Percentage serves as our main filter in deciding whether to reroute a bus, as it allows us to quantify the extent of spatial parallelism between the MRT and bus routes. This metric allows us to assess how closely each bus route aligns with MRT coverage and identify potential redundancies.</p>
+<ol>
+<li>
+<p><strong>Adding MRT Geometries</strong>: Each MRT line geometry (e.g., North-South, East-West) was added as a new column in the bus route GeoDataFrame (<code>bus_mrt_combined_gdf</code>), providing a spatial reference for each line alongside the bus routes.</p>
+</li>
+<li>
+<p><strong>Buffering Bus Routes</strong>: Bus routes were buffered to account for proximity to MRT lines, creating a <code>buffered_bus_route_geom</code> column with a 400-metre buffer around each route. This provides a margin for measuring spatial overlap.</p>
+</li>
+<li>
+<p><strong>Calculating Overlap</strong>: For each bus service, we calculated the percentage overlap between the buffered bus route and each MRT line geometry. This was computed by dividing the intersection area by the total area of the buffered bus route to obtain the overlap percentage. The overlap percentage gives us an idea of the proportion of the bus route that is parallel to the MRT line within a reasonable proximity.</p>
+</li>
+<li>
+<p><strong>Storing Results</strong>: The calculated overlap percentages were stored in a new DataFrame, allowing for further analysis of how closely bus routes parallel MRT lines across Singapore’s transport network.</p>
+</li>
+</ol>
+<h4 id="336-handling-nan-data-filter-2">3.3.6 Handling NaN Data (Filter 2)</h4>
+<p>We noticed that quite a sizable number of 'Category' entries are labelled as 'NaN'. This is because some of the buses are operated by another company called Tower Transit, which does not have any 'Category' labels in the LTA DataMall.</p>
+<p>This makes our filtering especially tricky, as we are unable to fill in the appropriate labels. Initially, we removed 'NaN' entries, but this resulted in many bus services being filtered out, including many actual trunk services (false negatives). Our alternative approach was to keep the 'NaN' entries, but this resulted in many feeder services being included (false positives).</p>
+<p>We decided to take a data science approach in labelling the data. Amongst the highly overlapped bus services, we ran a K-means clustering, clustering on the average distance travelled.</p>
+<p>Our plot is as follows:</p>
+<p><img src="static/elbow_plot.png" alt="Elbow Plot of Clustering"></p>
+<p>It is evident that the optimal K here is 3.</p>
+<p>After clustering, we examined the buses in each cluster and their normalised average distances. We chose to drop the cluster with the shortest normalised average distances. This is because the clustering suggests that buses in the remaining clusters are more likely to be trunk services due to their longer normalised average distances. In this case, from our results, we can see that buses in clusters 1 and 2 have longer normalised average distances, so are less likely to be feeders.</p>
+<p><img src="static/cluster_results.png" alt="Cluster Results"></p>
+<hr>
+<h3 id="34-phase-two-consumer-sentiment">3.4 Phase Two: Consumer Sentiment</h3>
+<h4 id="341-additional-feature-engineering">3.4.1 Additional Feature Engineering</h4>
+<p>To address the likelihood of negative public responses for bus routes that are flagged for service changes, here are the additional features that we engineered:</p>
+<h5 id="3411-passenger-volume-origin-destination-od-bus-stops-data">3.4.1.1 Passenger Volume Origin-Destination (OD) Bus Stops Data</h5>
+<p>This feature serves as a proxy for the demand and ridership for each bus service. LTA DataMall provides monthly records (backdated up to three months) of passenger trips data between pairs of origin-destination bus stops. The granularity of the data is at the hourly, origin-destination, day-type level and is stored as <code>jul24_od_volume</code>, <code>aug24_od_volume</code>, <code>sep24_od_volume</code>.</p>
+<p>We grouped by day-type and origin-destination and summed the total passenger trips made in the month for every origin-destination pair of bus stops for weekdays and weekends/public holidays. This is stored under <code>jul24_aggregated_od_volume_df</code>, <code>aug24_aggregated_od_volume_df</code>, <code>sep24_aggregated_od_volume_df</code>.</p>
+<p>Thereafter, we utilised the <code>bus_routes_df</code>, which contains data on the direction and sequence of bus stops that every bus service goes through. We grouped the <code>bus_routes_df</code> by its 'ServiceNo', 'Direction', and 'StopSequence' and iterated through it, storing data on the passenger trips made in the month for every origin-destination pair of bus stops and for weekdays and weekends/public holidays.</p>
+<p>Finally, we performed a final aggregation that summed the passenger trips for every origin-destination pair of bus stops in each bus service to get the total passenger volume that the bus service receives for the month.</p>
+<h5 id="3412-bus-routes-distance">3.4.1.2 Bus Routes Distance</h5>
+<p>In our analysis, we aimed to focus on trunk services. Although the LTA DataMall includes data on whether a bus is classified as a trunk service, this information is incomplete—some services, particularly those operated by Tower Transit, are missing this classification (e.g., service 82). Since removing these buses could exclude routes with a high overlap percentage, we decided to use the average distance travelled by the bus service as a feature to distinguish between trunk and feeder bus services. This is because feeder services generally travel shorter distances.</p>
+<p>The <code>bus_routes_df</code> contains data on the distance travelled by the bus service from its starting location to its current 'StopSequence' for each 'Direction' under the 'Distance' column. We obtained the distance travelled by the bus service in a particular 'Direction' by grouping by 'ServiceNo' and 'Direction' and taking the maximum of the 'Distance' column.</p>
+<p>Since there exists a mixture of bus services that have two directions or one direction, we decided that taking the average of the distance travelled by the bus service across both 'Direction' (if there exists a second direction) would be a more informative feature to distinguish between trunk and feeder bus services.</p>
+<h5 id="3413-population-served">3.4.1.3 Population Served</h5>
+<p>Population served gives us a rough idea of the number of people each bus service is serving. This allows us to get a rough estimate of how many commuters are being served by this bus service, adding a layer of demographic insight to the demand for each bus service.</p>
+<p>To estimate this, we first obtained the population figures for each planning area from the Department of Statistics. Secondly, we drew out the boundary for each planning area on the Singapore map. The data for the planning area boundary was obtained from the OneMap API. Lastly, using the geometry objects of bus routes that we had previously processed, we mapped out each bus route on the Singapore map. The population served is calculated by summing up the total population for each planning area the bus service traverses through.</p>
+<p>For example, using bus 859 as an example, the total population served for bus 859 would be the sum of the population in Yishun (229,520) and in Sembawang (110,090), as the bus traverses through these two planning areas.</p>
+<p><img src="static/population_plot.png" alt="Population Area"></p>
+<h5 id="3414-bus-frequency">3.4.1.4 Bus Frequency</h5>
+<p>The intention of using bus frequency as a feature is to enable us to identify bus services that are operating less frequently. This is because commuters are less likely to react negatively to the removal of bus services that operate on a low-frequency basis.</p>
+<p>We obtained bus frequency data using the LTA DataMall API. Since the frequency range was given in a string format and as a range, e.g., <code>6-10 mins</code>, we had to format it to an integer format to calculate an average frequency time. So for this case, the estimated time would have been 8 minutes.</p>
+<h5 id="3415-alternative-bus-services">3.4.1.5 Alternative Bus Services</h5>
+<p>By leveraging the <code>buffered_bus_route_geom</code> column with a 400-metre buffer around each route, we have a margin for measuring spatial overlap, and we compared each bus service with all other bus services and sorted them by overlap percentage to find the top alternative bus services for each bus service. This has added an additional dimension to our analysis with the inclusion of alternative bus services that are pivotal aspects of our transport network.</p>
+<h4 id="342-plotting-functions">3.4.2 Plotting Functions</h4>
+<p>To facilitate our data analysis, frontend development, and debugging, we wrote helper functions that plot geospatial geometries for visualisation.</p>
+<ul>
+<li>
+<p><strong><code>plot_mrt_combined_geometry</code></strong>: Takes in a GeoPandas DataFrame that contains a single row of data containing information about the MRT line and the geometry representing the MRT line.</p>
+<p>The intention of this function is to visualise the final geometry representing the MRT line to see if the geometry manipulations to combine the MRT station polygons and the buffering of the line segments connecting MRT stations are according to our experimental design.</p>
+<p>It was through this function that we realised we had initially processed the MRT geometries incorrectly, which led to an underestimation of the overlap percentage between bus services and MRT lines.</p>
+</li>
+</ul>
+<pre class="hljs"><code><div>
+</div></code></pre>
+<ul>
+<li>
+<p><strong><code>plot_bus_service_and_mrt_routes</code> (Backend version)</strong>: Takes in a bus service number and a GeoPandas DataFrame containing information about the geometries of MRT lines as well as the geometry of each bus route.</p>
+<p>The function then plots the bus route of the selected bus service number as lines, while the MRT lines are represented as geometries.</p>
+<p>The purpose of this plotting function is to sense-check the accuracy of the bus routes generated using the OSRM API since the bus routes are now unbuffered.</p>
+</li>
+<li>
+<p><strong><code>modified_plot_bus_service_and_mrt_routes</code></strong>: Takes in a bus service number and a GeoPandas DataFrame containing information about the geometries of MRT lines as well as the buffered geometry of each bus route.</p>
+<p>The function then plots the bus route of the selected bus service number as geometries, while the MRT lines are represented as geometries.</p>
+<p>The purpose of this plotting function is to sense-check our overlap percentage calculations.</p>
+</li>
+</ul>
+<pre class="hljs"><code><div>def modified_plot_bus_service_and_mrt_routes(service_no, gdf):
+
+
+   <span class="hljs-comment"># Filter the row with the given service number</span>
+   row = gdf[gdf[<span class="hljs-string">'ServiceNo'</span>] == service_no]
+
+
+   <span class="hljs-keyword">if</span> row.empty:
+       <span class="hljs-built_in">print</span>(f<span class="hljs-string">"No data found for ServiceNo: {service_no}"</span>)
+       <span class="hljs-built_in">return</span> None
+
+
+   <span class="hljs-comment"># Extract the buffered bus route geometry</span>
+   bus_route = row.iloc[0][<span class="hljs-string">'buffered_bus_route_geom'</span>]
+
+
+   <span class="hljs-comment"># Extract the MRT line geometries</span>
+   mrt_geoms = [
+       row.iloc[0][<span class="hljs-string">'NS_MRT_geom'</span>],
+       row.iloc[0][<span class="hljs-string">'EW_MRT_geom'</span>],
+       row.iloc[0][<span class="hljs-string">'DT_MRT_geom'</span>],
+       row.iloc[0][<span class="hljs-string">'CC_MRT_geom'</span>],
+       row.iloc[0][<span class="hljs-string">'NE_MRT_geom'</span>],
+       row.iloc[0][<span class="hljs-string">'TE_MRT_geom'</span>]
+   ]
+
+
+   <span class="hljs-comment"># Corresponding MRT line colors</span>
+   colors = [
+       <span class="hljs-string">'red'</span>,         <span class="hljs-comment"># NS Line</span>
+       <span class="hljs-string">'green'</span>,       <span class="hljs-comment"># EW Line</span>
+       <span class="hljs-string">'darkblue'</span>,    <span class="hljs-comment"># DT Line</span>
+       <span class="hljs-string">'yellow'</span>,      <span class="hljs-comment"># CC Line</span>
+       <span class="hljs-string">'purple'</span>,      <span class="hljs-comment"># NE Line</span>
+       <span class="hljs-string">'brown'</span>        <span class="hljs-comment"># TE Line</span>
+   ]
+
+
+   <span class="hljs-comment"># Center the map on the first point of the buffered bus route or MRT geometry</span>
+   start_coords = [bus_route.centroid.y, bus_route.centroid.x]  <span class="hljs-comment"># lat, lon</span>
+
+
+   <span class="hljs-comment"># Create a Folium map centered on the bus route</span>
+   m = folium.Map(location=start_coords, zoom_start=13)
+
+
+   <span class="hljs-comment"># Plot the buffered bus route in black</span>
+   folium.GeoJson(
+       bus_route,
+       name=<span class="hljs-string">'Buffered Bus Route'</span>,
+       style_function=lambda x: {<span class="hljs-string">'color'</span>: <span class="hljs-string">'black'</span>, <span class="hljs-string">'weight'</span>: 2, <span class="hljs-string">'fillOpacity'</span>: 0.3}
+   ).add_to(m)
+
+
+   <span class="hljs-comment"># Plot each MRT line geometry with the corresponding color</span>
+   <span class="hljs-keyword">for</span> mrt_geom, color, name <span class="hljs-keyword">in</span> zip(mrt_geoms, colors, [
+       <span class="hljs-string">'NS Line'</span>, <span class="hljs-string">'EW Line'</span>, <span class="hljs-string">'DT Line'</span>, <span class="hljs-string">'CC Line'</span>, <span class="hljs-string">'NE Line'</span>, <span class="hljs-string">'TE Line'</span>
+   ]):
+       folium.GeoJson(
+           mrt_geom,
+           name=name,
+           style_function=lambda x, color=color: {<span class="hljs-string">'color'</span>: color, <span class="hljs-string">'weight'</span>: 2}
+       ).add_to(m)
+
+
+   <span class="hljs-comment"># Add a layer control to switch between routes</span>
+   folium.LayerControl().add_to(m)
+
+
+   <span class="hljs-comment"># Return the map object</span>
+   <span class="hljs-built_in">return</span> m
+
+</div></code></pre>
+<ul>
+<li><strong><code>plot_bus_service_and_mrt_routes</code> (Frontend version)</strong>: This function builds upon the existing <code>modified_plot_bus_service_and_mrt_routes</code> function and allows for the inclusion of alternative bus services. This allows us to visualise the overlaps between a selected bus service and its closest bus alternative, providing a clear visual representation of the alternative transport options for a bus service.</li>
+</ul>
+<pre class="hljs"><code><div>def plot_bus_service_and_mrt_routes(service_no, gdf, alternative_service_no=None):
+   <span class="hljs-comment"># Initialise the map centered on Singapore</span>
+   singapore_coords = [1.3521, 103.8198]
+   m = folium.Map(location=singapore_coords, zoom_start=12, control_scale=True)
+
+
+   <span class="hljs-comment"># Plot MRT lines</span>
+   line_colors = {
+       <span class="hljs-string">'NS Line'</span>: <span class="hljs-string">'red'</span>,
+       <span class="hljs-string">'EW Line'</span>: <span class="hljs-string">'green'</span>,
+       <span class="hljs-string">'DT Line'</span>: <span class="hljs-string">'darkblue'</span>,
+       <span class="hljs-string">'CC Line'</span>: <span class="hljs-string">'yellow'</span>,
+       <span class="hljs-string">'NE Line'</span>: <span class="hljs-string">'purple'</span>,
+       <span class="hljs-string">'TE Line'</span>: <span class="hljs-string">'brown'</span>
+   }
+
+
+   <span class="hljs-keyword">for</span> line_name, color <span class="hljs-keyword">in</span> line_colors.items():
+       geom_col = f<span class="hljs-string">"{line_name.split()[0]}_MRT_geom"</span>
+       mrt_geom = gdf.iloc[0][geom_col]
+       <span class="hljs-keyword">if</span> mrt_geom and not mrt_geom.is_empty:
+           folium.GeoJson(
+               mrt_geom,
+               name=line_name,
+               style_function=lambda x, color=color: {<span class="hljs-string">'color'</span>: color, <span class="hljs-string">'weight'</span>: 2}
+           ).add_to(m)
+
+
+   <span class="hljs-comment"># Plot main bus route</span>
+   <span class="hljs-keyword">if</span> service_no:
+       row = gdf[gdf[<span class="hljs-string">'ServiceNo'</span>] == service_no]
+       <span class="hljs-keyword">if</span> not row.empty:
+           bus_route = row.iloc[0][<span class="hljs-string">'geometry'</span>]
+           <span class="hljs-keyword">if</span> bus_route and not bus_route.is_empty:
+               <span class="hljs-comment"># Center the map on the bus route</span>
+               m.location = [bus_route.centroid.y, bus_route.centroid.x]
+               m.zoom_start = 13
+               route_name = f<span class="hljs-string">"Main Bus Route: {service_no}"</span>
+               main_bus_route_fg = folium.FeatureGroup(name=route_name, overlay=True, control=True)
+               folium.GeoJson(
+                   bus_route,
+                   name=route_name,
+                   style_function=lambda x: {<span class="hljs-string">'color'</span>: <span class="hljs-string">'black'</span>, <span class="hljs-string">'weight'</span>: 3}
+               ).add_to(main_bus_route_fg)
+               main_bus_route_fg.add_to(m)
+       <span class="hljs-keyword">else</span>:
+           <span class="hljs-built_in">print</span>(f<span class="hljs-string">"No data found for ServiceNo: {service_no}"</span>)
+
+
+   <span class="hljs-comment"># Plot alternative bus route</span>
+   <span class="hljs-keyword">if</span> alternative_service_no:
+       alt_row = gdf[gdf[<span class="hljs-string">'ServiceNo'</span>] == alternative_service_no]
+       <span class="hljs-keyword">if</span> not alt_row.empty:
+           alt_bus_route = alt_row.iloc[0][<span class="hljs-string">'geometry'</span>]
+           <span class="hljs-keyword">if</span> alt_bus_route and not alt_bus_route.is_empty:
+               alt_route_name = f<span class="hljs-string">"Alternate Bus Route: {alternative_service_no}"</span>
+               alternative_bus_route_fg = folium.FeatureGroup(name=alt_route_name, overlay=True, control=True)
+               folium.GeoJson(
+                   alt_bus_route,
+                   name=alt_route_name,
+                   style_function=lambda x: {<span class="hljs-string">'color'</span>: <span class="hljs-string">'blue'</span>, <span class="hljs-string">'weight'</span>: 3, <span class="hljs-string">'dashArray'</span>: <span class="hljs-string">'5, 5'</span>}
+               ).add_to(alternative_bus_route_fg)
+               alternative_bus_route_fg.add_to(m)
+       <span class="hljs-keyword">else</span>:
+           <span class="hljs-built_in">print</span>(f<span class="hljs-string">"No data found for Alternative ServiceNo: {alternative_service_no}"</span>)
+
+
+   <span class="hljs-comment"># Add Layer Control</span>
+   folium.LayerControl(collapsed=False).add_to(m)
+
+
+   <span class="hljs-built_in">return</span> m._repr_html_()
+
+</div></code></pre>
+<h4 id="343-creating-a-scoring-system">3.4.3 Creating a Scoring System</h4>
+<p>Now our final DataFrame contains the following information:</p>
+<ol>
+<li>Overlap percentage with respect to each MRT line (<code>OverlapPercentage</code>)</li>
+<li>Average overlap percentage of top 5 overlapping buses (<code>Avg_Bus_Overlap_Percentage</code>)</li>
+<li>Overlap percentage of the top overlapping bus (<code>Max_Bus_Overlap_Percentage</code>)</li>
+<li>Population number served (<code>Population_Served</code>)</li>
+<li>Estimated passenger OD data (<code>Average_Passenger_Volume</code>)</li>
+<li>Mean bus frequency (<code>Mean_Freq</code>)</li>
+</ol>
+<p>We are able to generate a scoring system based on this to determine the usefulness of the bus services.</p>
+<hr>
+<h2 id="4-results">4. Results</h2>
+<h3 id="41-scoring-system">4.1 Scoring System</h3>
+<p>Based on our scoring system, the higher the score, the more suitable a bus service is for rerouting or removal.</p>
+<p>As larger values in <code>Average_Passenger_Volume</code> and <code>Population_Served</code> suggest that these bus services are likely to be popular and in demand, we have chosen to invert them for our scoring system so that bus services that are less popular receive higher scores.</p>
+<p>We have also opted for a <code>MinMaxScaler</code> with a feature range of 0 to 1 as our features have very different ranges. By scaling to a common range, we are able to compare different features directly and combine them for a total score.</p>
+<ul>
+<li>A higher <code>OverlapPercentage</code> suggests that the bus service overlaps more with the MRT line, indicating that the MRT line would be a strong alternative to the bus service.</li>
+<li>A higher <code>Avg_Bus_Overlap_Percentage</code> and <code>Max_Bus_Overlap_Percentage</code> suggest that there are more alternative bus services overlapping and there are closely overlapping bus services available. Hence, commuters can depend on alternative bus services after the removal of the bus service.</li>
+<li>We have inverted the <code>Average_Passenger_Volume</code> to give higher scores for bus services with low commuter demand.</li>
+<li>A higher <code>Mean_Freq</code> score means that the bus arrives infrequently and commuters are less likely to depend on the service for their travels.</li>
+<li>We have also inverted the <code>Population_Served</code> to give higher scores for bus services that pass through areas with low populations, as it implies lower potential demand for the bus service and fewer people would be affected by its removal.</li>
+</ul>
+<p><strong>Final Score</strong>: For the final score, we added the values of all features while halving the values of <code>Avg_Bus_Overlap_Percentage</code> and <code>Max_Bus_Overlap_Percentage</code> to ensure that bus services are not given excessive weight in the final scoring. The top-scoring bus services are then selected for further analysis.</p>
+<h3 id="42-proposed-changes-to-bus-routes">4.2 Proposed Changes to Bus Routes</h3>
+<h4 id="bus-service-400">Bus Service 400</h4>
+<p><img src="static/bus400.png" alt="Bus 400"></p>
+<p>Bus Service 400 mainly serves the Central Business District (CBD) area. It overlaps significantly with the Thomson-East Coast Line (TEL), with stations Shenton Way (TE19), Marina Bay (TE20), and Gardens by the Bay (TE22) being covered in the route. This has resulted in low demand for this bus service, with the lowest average passenger volume and population served. The presence of several MRT lines in the area, availability of alternative bus routes, and low frequency of the bus (30 minutes) mean that it would be unlikely to cause public outrage with its removal.</p>
+<h4 id="bus-service-36b">Bus Service 36B</h4>
+<p><img src="static/bus36b.png" alt="Bus 36B"></p>
+<p>Bus Service 36B is a 30 km short trunk variant of Bus Service 36. With significant overlaps with the Thomson-East Coast Line (TEL), we propose amending the service to terminate at Tanjong Katong (TE25) to leverage the recent launch of Thomson-East Coast Line Stage 4 (TEL4). This would avoid overlapping additional TEL stations: Marine Parade (TE26), Marine Terrace (TE27), and Siglap (TE28), and allow the service to focus on alleviating demand in the city areas of Suntec City, City Hall, Dhoby Ghaut, and Orchard.</p>
+<h4 id="bus-service-883">Bus Service 883</h4>
+<p><img src="static/bus883.png" alt="Bus 883"></p>
+<p>Bus 883 is a trunk service plying between Sembawang and Yishun Central 2. It overlaps significantly with the North-South Line (NSL), covering the stations of Sembawang (NS11), Canberra (NS12), and Yishun (NS13). With the launch of Canberra station in 2019, residents of Canberra no longer have to depend on this service for connectivity to MRT stations, and the presence of a strong alternative, bus 117, would likely be able to cope effectively with commuter demand.</p>
+<h4 id="bus-service-82">Bus Service 82</h4>
+<p><img src="static/bus82.png" alt="Bus 82"></p>
+<p>Bus Service 82 is a trunk service plying through Punggol and looping at Serangoon Central, passing through Sengkang, Hougang, and Kovan. It largely duplicates the North-East Line (NEL) and has strong bus alternatives such as Bus 80, which overlaps with significant portions of its route. With its total travelling time of 85 minutes, it would take more than 40 minutes to travel from Punggol to Serangoon. This is likely to be easily substituted by the existing NEL as well as alternative buses like Bus 80, which covers the areas from Serangoon to Sengkang.</p>
+<hr>
+<h2 id="5-discussion">5. Discussion</h2>
+<h3 id="51-improving-our-methodology">5.1 Improving Our Methodology</h3>
+<p>Before our current approach, we explored a one-size-fits-all clustering approach to identify bus services for rerouting or removal using features like overlap percentage between MRT lines and services, and passenger volume origin-destination bus stops.</p>
+<p>However, we realised that this approach might have been overly ambitious since the primary consideration should still first be identifying trunk bus services that have a high degree of parallelism with MRT lines. Therefore, instead of applying a broad clustering approach, we refined our strategy to focus initially on identifying these trunk services with a high degree of parallelism with MRT lines.</p>
+<p>This more targeted approach allows us to build a data-driven foundation that can later incorporate additional factors that can assess the likelihood of a negative public response for bus routes that are flagged for service changes, such as the existence of alternative bus services, but starts with addressing the primary issue of overlapping routes with MRT lines.</p>
+<h3 id="52-limitations">5.2 Limitations</h3>
+<h4 id="lack-of-usable-data">Lack of Usable Data</h4>
+<p>The data provided by LTA were relatively clean but did not provide deeper insights. For instance, we needed to gather the passenger volume data for each bus route but were unable to get granular data. We had to improvise and use passenger OD data, but we concluded that it was just an estimate. Having the granular values would have enhanced our analytics.</p>
+<h4 id="accuracy-of-routes">Accuracy of Routes</h4>
+<p>By using the OSRM API to plot each bus route segment between consecutive bus stops, we had to assume that each bus service was taking the shortest path between each consecutive bus stop. This assumption did not hold all the time, especially for feeder services looping through a neighbourhood. Nevertheless, this assumption holds generally for trunk services that tend to travel longer distances and take the shortest paths between bus stops.</p>
+<h4 id="potential-under-representation-of-workplaces">Potential Under-representation of Workplaces</h4>
+<p>As the population served metric is calculated by residential populations in each planning area, this means that residential areas are prioritised in our scoring system. This could explain why bus service 400 received the highest score for <code>Population_Served</code> as it mostly operated within the Central Business District, which has a small residential population. Hence, having more information on the density of commuters in workplaces and commercial sites could potentially provide additional insights.</p>
+<h3 id="53-future-work">5.3 Future Work</h3>
+<p>With the continued development of new MRT lines in Singapore's transport system, there will be a need to look at bus services serving areas where new MRT stations are available. With a longer timeframe, it would also be possible to track passenger data for bus services over a longer period, thereby allowing for analysis of the changes in demand for each bus service.</p>
+<p>We are confident in the product we have developed and can ensure that it will be future-proof to the addition of new bus routes and MRT lines. We originally intended for this to be a full frontend website to use and share our findings. However, the tight timeframe only allowed us to create a simple interactive map. Given the opportunity, we would like to revisit this project in the future to create an interactive graphic for the public to learn from.</p>
+<hr>
+<h2 id="6-conclusion">6. Conclusion</h2>
+<p>In this project, we have developed a data-driven methodology to identify redundant bus routes in Singapore's public transportation network. By analysing spatial overlaps between bus routes and MRT lines, and incorporating additional features such as passenger volumes, population served, bus frequencies, and alternative services, we have proposed specific bus routes for rerouting or removal. Our approach aims to optimise resource allocation while minimising commuter dissatisfaction.</p>
+<p>While there are limitations due to data availability and assumptions made, our framework provides a scalable and adaptable solution that can be refined with more granular data and extended to future transportation developments. We believe that such data science methodologies can greatly assist the LTA in making informed decisions that balance efficiency with public interest.</p>
+<hr>
+
+</body>
+</html>
