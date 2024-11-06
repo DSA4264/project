@@ -95,4 +95,5 @@ This project was completed in five weeks and was completed by (in no order of co
 - CHOW Xin Tian (NUS Y4 DSE)
 - LIM Choon Hao (NUS Y4 DSA)
 - YOUNG Zhan Heng (NUS Y4 DSE)
+<br>
 We will also like to thank your Adjunct Lecturer, Shaun Khoo, for guiding us throughout this project.
